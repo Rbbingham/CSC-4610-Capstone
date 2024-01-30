@@ -1,7 +1,6 @@
 USE [CapstoneDB]
 GO
 
-
 DECLARE @Table AS [dbo].[TnTech_TableType];
 
 INSERT INTO
@@ -16,4 +15,4 @@ FROM
 WHERE
 	CAST(CreatedOn AS DATE) = CAST(GETDATE() AS DATE);
 
-EXEC [dbo].[TnTech_CountRecords] @Records = @Table, @TableName = 'dbo.Toyota_Distribution';
+EXEC [dbo].[TnTech_CountRecords] @Records = @Table, @TableName = 'dbo.Toyota_Distribution', @Expected = 1000;
