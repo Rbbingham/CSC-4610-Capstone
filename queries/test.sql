@@ -1,4 +1,6 @@
-USE [CapstoneDB];
+USE [CapstoneDB]
+GO
+
 
 DECLARE @Table AS [dbo].[TnTech_TableType];
 
@@ -10,7 +12,7 @@ SELECT
 	NULL AS ModifiedOn,
 	NULL AS ModifiedBy
 FROM
-	[BI_Feed].[dbo].[Toyota_Distribution]
+	[BI_Feed].[dbo].[Toyota_Distribution] with (nolock)
 WHERE
 	CAST(CreatedOn AS DATE) = CAST(GETDATE() AS DATE);
 
