@@ -6,10 +6,23 @@ from BI_Feed.dbo.BI_BDA_Transactions;
 select top 10*
 from BI_Feed.dbo.BI_BDA_UniqueProducts;
 
-select Cast(CreatedOn as DATE) as CreatedOn,
-		count(distinct id) as RecordCount
-from BI_Feed.dbo.BI_BDA_UniqueProducts with (nolock)
-group by Cast(CreatedOn as DATE);
+select Cast(GETDATE() AS DATE) as TestDate,
+		'BI_BDA_UniqueProducts' as TableName,
+		'Record Count' as TestName,
+		count(distinct id) as ActualResult,
+		3850 as ExpectedResult
+into #temp_BI_BDA_UniqueProducts
+from BI_Feed.dbo.BI_BDA_UniqueProducts with (nolock);
+
+ALTER TABLE #temp_BI_BDA_UniqueProducts ADD Deviation Int; -- Adding Deviation to the temporary table
+UPDATE  #temp_BI_BDA_UniqueProducts
+SET Deviation = ActualResult - ExpectedResult; -- Updating Deviation to the actual deviation
+SELECT * FROM  #temp_BI_BDA_UniqueProducts; -- Selecting from temporary table
+DROP TABLE #temp_BI_BDA_UniqueProducts; -- Final, drop the temporary table
+
+
+
+select * from CapstoneDB.dbo.TnTech_RecordCounts;
 
 --29 BI_Feed.dbo.Toyota_Distribution
 Select CreatedOn,CreatedBy, ModifiedOn, ModifiedBy, CardCreateDate, VIN,AdminNumber, Location, CurrentLimit
@@ -20,6 +33,22 @@ select  Cast(CreatedOn as DATE) as CreatedOn,
 		count(distinct Vin) as VINCount
 from BI_Feed.dbo.Toyota_Distribution with(nolock)
 group by Cast(CreatedOn as DATE);
+
+select  Cast(GETDATE() AS DATE) as TestDate,
+		'Toyota_Distribution' as TableName,
+		'VIN Count' as TestName,
+		count(distinct Vin) as ActualResult,
+		13000 as ExpectedResult 
+into #temp_Toyota_Distribution
+from BI_Feed.dbo.Toyota_Distribution with(nolock);
+
+ALTER TABLE #temp_Toyota_Distribution ADD Deviation Int; -- Adding Deviation to the temporary table
+
+UPDATE  #temp_Toyota_Distribution
+SET Deviation = ActualResult - ExpectedResult; -- Updating Deviation to the actual deviation
+
+SELECT * FROM  #temp_Toyota_Distribution; -- Selecting from temporary table
+DROP TABLE #temp_Toyota_Distribution; -- Final, drop the temporary table
 
 
 --30 BI_Feed.dbo.Toyota_Inventory
