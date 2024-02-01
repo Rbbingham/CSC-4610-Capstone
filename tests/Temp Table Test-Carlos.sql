@@ -13,16 +13,14 @@ ALTER TABLE #temp_bankcore_products ADD Deviation Int; -- Adding Deviation to th
 UPDATE #temp_bankcore_products
 SET Deviation = ActualResult - ExpectedResult; -- Updating Deviation to the deviation
 
---SELECT * FROM #temp_bankcore_products; -- Selecting from temporary table
-
 -- insert your result into the CapstoneDB.dbo.TnTech_TestResults
 Insert into CapstoneDB.dbo.TnTech_TestResults(CreatedBy,TableName,ActualResult, ExpectedResult,Completed)
 Select TestName,TableName,ActualResult,ExpectedResult,1
 from #temp_bankcore_products;
 
---select * from CapstoneDB.dbo.TnTech_TestResults;
 
 DROP TABLE #temp_bankcore_products; -- Final, drop the temporary table
+
 
 --6 BI_Feed.dbo.BDA_Institutions
 SELECT -- Ensuring that 20 institutions are available in the table.
@@ -38,13 +36,11 @@ ALTER TABLE #temp_institutions ADD Deviation Int; -- Adding Deviation to the tem
 UPDATE #temp_institutions
 SET Deviation = ActualResult - ExpectedResult; -- Updating Deviation to the deviation
 
---SELECT * FROM #temp_institutions; -- Selecting from temporary table
 
 Insert into CapstoneDB.dbo.TnTech_TestResults(CreatedBy,TableName,ActualResult, ExpectedResult,Completed)
 Select TestName,TableName,ActualResult,ExpectedResult,1
 from #temp_institutions;
 
---select * from CapstoneDB.dbo.TnTech_TestResults;
 
 DROP TABLE #temp_institutions; -- Final, drop the temporary table
 
@@ -63,13 +59,11 @@ ALTER TABLE #temp_BI_BDA_UniqueProducts ADD Deviation Int; -- Adding Deviation t
 UPDATE  #temp_BI_BDA_UniqueProducts
 SET Deviation = ActualResult - ExpectedResult; -- Updating Deviation to the actual deviation
 
---SELECT * FROM  #temp_BI_BDA_UniqueProducts; -- Selecting from temporary table
 
 Insert into CapstoneDB.dbo.TnTech_TestResults(CreatedBy,TableName,ActualResult, ExpectedResult,Completed)
 Select TestName,TableName,ActualResult,ExpectedResult,1
 from #temp_BI_BDA_UniqueProducts;
 
---select * from CapstoneDB.dbo.TnTech_TestResults;
 
 DROP TABLE #temp_BI_BDA_UniqueProducts; -- Final, drop the temporary table
 
@@ -92,7 +86,7 @@ Insert into #temp_BI_ProductInclusionTables(TestDate,TableName,TestName, ActualR
 SELECT 
 	cast(GETDATE() AS DATE)as TestDate,
 	'BI_ProductInclusionTables' as TableName,
-	'Check products' as TestName,
+	'Check Product IDs' as TestName,
 	COUNT(DISTINCT ProductID) as ActualResult,
 	275 as ExpectedResult
 FROM BI_Feed.dbo.BI_ProductInclusionTables with (nolock);
@@ -139,14 +133,11 @@ ALTER TABLE #temp_Toyota_Distribution ADD Deviation Int; -- Adding Deviation to 
 UPDATE  #temp_Toyota_Distribution
 SET Deviation = ActualResult - ExpectedResult; -- Updating Deviation to the actual deviation
 
---SELECT * FROM  #temp_Toyota_Distribution; -- Selecting from temporary table
-
-
 Insert into CapstoneDB.dbo.TnTech_TestResults(CreatedBy,TableName,ActualResult, ExpectedResult,Completed)
 Select TestName,TableName,ActualResult,ExpectedResult,1
 from #temp_Toyota_Distribution;
 
-select * from CapstoneDB.dbo.TnTech_TestResults;
-
 DROP TABLE #temp_Toyota_Distribution; -- Final, drop the temporary table
 
+-- See our results after running
+select * from CapstoneDB.dbo.TnTech_TestResults;
