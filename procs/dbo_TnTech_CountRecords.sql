@@ -47,14 +47,14 @@ BEGIN
 	WHERE
 		CAST(CreatedOn AS DATE) = CAST(GETDATE() AS DATE);
 
-	INSERT INTO 
+	INSERT INTO
 		[dbo].[TnTech_TestResults](TableName, ActualResult, ExpectedResult, CreatedOn, CreatedBy, ModifiedOn, ModifiedBy, Result)
 	SELECT 
 		*
 	FROM
 		#TCR;
 
-	DROP TABLE #TCR
+	DROP TABLE #TCR;
 
 	SET NOCOUNT OFF;
 END;
