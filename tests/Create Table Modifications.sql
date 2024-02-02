@@ -13,7 +13,7 @@ CREATE TABLE [dbo].[TnTech_TestResults](
 	[CreatedOn] [date] NOT NULL,
 	[CreatedBy] [varchar](256) NULL,
 	[TestRunDate] [datetime] NULL,
-	[TestName] [varchar]NOT NULL,
+	[TestName] [varchar](256)NOT NULL,
 	[ModifiedOn] [datetime] NULL,
 	[ModifiedBy] [varchar](256) NULL,
 	[TableName] [varchar](256) NOT NULL,
