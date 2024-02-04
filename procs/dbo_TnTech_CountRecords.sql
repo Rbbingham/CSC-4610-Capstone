@@ -11,51 +11,68 @@
 USE [CapstoneDB]
 GO
 
+-- TODO: convert datetime to date
+-- TODO: convert @Expected to bigint
 CREATE OR ALTER PROCEDURE [dbo].[TnTech_CountRecords] (
-	@Records [dbo].[TnTech_TableType] READONLY,
 	@TableName varchar(256),
-	@Expected bigint
+	@Column varchar(256),
+	@Date varchar(256),
+	@Expected varchar(256)
 )
 AS
 BEGIN
 	SET NOCOUNT ON;
 
+	IF OBJECT_ID('#TCR') IS NOT NULL BEGIN
+		DROP TABLE #TCR
+	END;
+
 	CREATE TABLE #TCR (
-		[TableName] [varchar] (100) NOT NULL,
-		[ActualResult] [bigint] NULL,
-		[ExpectedResult] [bigint] NULL,
-		[CreatedOn] [datetime] NOT NULL,
-		[CreatedBy] [varchar](256) NOT NULL,
-		[ModifiedOn] [datetime] NULL,
-		[ModifiedBy] [varchar](256) NULL,
-		[Result] [bit] NOT NULL,
-	)
+		[TableName] varchar (256) NOT NULL,
+		[ActualResult] bigint NULL,
+		[ExpectedResult] bigint NULL,
+		[CreatedOn] datetime NOT NULL,
+		[CreatedBy] varchar(256) NOT NULL,
+		[ModifiedOn] datetime NULL,
+		[ModifiedBy] varchar(256) NULL,
+		[Completed] bit NOT NULL,
+	);
+	
+	DECLARE @Command nvarchar(max);
+	SET @Command = 
+		'SELECT COUNT(DISTINCT ' + @Column + '), ' + @Expected + ', GETDATE() AS CreatedOn, NULL AS ModifiedOn, NULL AS ModifiedBy, 1 FROM ' + @TableName + ' WHERE ' + @Date + ' = CAST(GETDATE() AS DATE)';
 
-	INSERT INTO 
-		#TCR(TableName, ActualResult, ExpectedResult, CreatedOn, CreatedBy, ModifiedOn, ModifiedBy, Result)
-	SELECT
-		@TableName,
-		COUNT(DISTINCT ID),
-		@Expected,
-		GETDATE() AS CreatedOn,
-		'TnTech_CountRecords' AS CreatedBy,
-		NULL AS ModifiedOn,
-		NULL AS ModifiedBy,
-		1
-	FROM
-		@Records
-	WHERE
-		CAST(CreatedOn AS DATE) = CAST(GETDATE() AS DATE);
+	EXEC(@Command);
 
-	INSERT INTO
-		[dbo].[TnTech_TestResults](TableName, ActualResult, ExpectedResult, CreatedOn, CreatedBy, ModifiedOn, ModifiedBy, Result)
-	SELECT 
-		*
-	FROM
-		#TCR;
+	--INSERT INTO 
+	--	#TCR(TableName, ActualResult, ExpectedResult, CreatedOn, CreatedBy, ModifiedOn, ModifiedBy, Completed)
+	--EXEC(@Command);
+
+	--INSERT INTO
+	--	[dbo].[TnTech_TestResults](TableName, ActualResult, ExpectedResult, CreatedOn, CreatedBy, ModifiedOn, ModifiedBy, Completed)
+	--SELECT 
+	--	TableName,
+	--	ActualResult,
+	--	ExpectedResult,
+	--	CreatedOn,
+	--	CreatedBy,
+	--	ModifiedOn,
+	--	ModifiedBy,
+	--	Completed
+	--FROM
+	--	#TCR;
 
 	DROP TABLE #TCR;
 
 	SET NOCOUNT OFF;
 END;
-GO
+GO 
+
+DECLARE @TodaysDate datetime;
+SET @TodaysDate = GETDATE();
+EXEC [dbo].[TnTech_CountRecords] @TableName = '[BI_Feed].[dbo].[Toyota_Inventory]', 
+								 @Column = '[VIN]', 
+								 @Date = @TodaysDate,
+								 @Expected = '1000';
+
+-- SELECT * FROM [dbo].TnTech_TestResults ORDER BY CreatedOn DESC;
