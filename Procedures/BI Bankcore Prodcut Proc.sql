@@ -6,7 +6,7 @@
 Use CapstoneDB
 GO
 
-Create Procedure [dbo].[Product_ID_Count_BI_BankCore_Products] --name of procedure
+CREATE or ALTER PROCEDURE [dbo].[Product_ID_Count_BI_BankCore_Products] --name of procedure
 AS 
 
 BEGIN

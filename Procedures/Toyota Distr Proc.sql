@@ -6,7 +6,7 @@
 Use CapstoneDB
 GO
 
-Create Procedure [dbo].[VIN_Count_Toyota_Distribution] (
+CREATE OR ALTER Procedure [dbo].[VIN_Count_Toyota_Distribution] (
 	@param1 int,
 	@param2 varchar(256),
 	@param3 date
