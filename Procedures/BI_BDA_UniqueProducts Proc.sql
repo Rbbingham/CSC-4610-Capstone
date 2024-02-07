@@ -1,53 +1,46 @@
 -- =============================================
--- Author:      Carlos Escudero
--- Create Date: 02/02/2024
--- Description: Counts the number of Vins in the Toyota_Distribution
+-- Author:    Carlos Escudero  
+-- Create Date: 2/2/24
+-- Description: ID Count for BI_BDA_UniqueProducts
 -- =============================================
 Use CapstoneDB
 GO
 
-CREATE OR ALTER Procedure [dbo].[VIN_Count_Toyota_Distribution] 
+Create Procedure[dbo].[ID_Count_BI_BDA_UniqueProducts] --name of procedure
 AS 
 
 BEGIN
 
 SET NOCOUNT ON;
-
-IF OBJECT_ID('#temp_Toyota_Distribution') IS NOT NULL BEGIN
-	DROP TABLE #temp_Toyota_Distribution
-END;
-
 --Create temp table 
-CREATE TABLE #temp_Toyota_Distribution(
+CREATE TABLE #temp_BI_BDA_UniqueProducts(
 	[TestRunDate][date]NOT NULL,
 	[TableName][varchar](256) NOT NULL,
 	[TestName][varchar](256) NOT NULL,
 	[ActualResult] [bigint] NOT NULL,
 	[ExpectedResult] [bigint] NULL,
 )
-
 -- run normal query into temp table
 INSERT INTO 
-	#temp_Toyota_Distribution
+	#temp_BI_BDA_UniqueProducts--temp table name
 SELECT
 	 Cast(GETDATE() AS DATE),
-	'Toyota_Distribution',
-	'VIN Count',
-	count(distinct Vin),
-	13000
+	'BI_BDA_UniqueProducts',--name of table
+	'ID Count',-- name of test
+	count(distinct ID),--actual result
+	3850 -- expected result 
 FROM 
-	BI_Feed.dbo.Toyota_Distribution with(nolock);
-
+	BI_Feed.dbo.BI_BDA_UniqueProducts with(nolock); --choose table from BI_feed
 --Upload data into CapstoneDB.dbo.TnTech_TestResults
 INSERT INTO 
 	CapstoneDB.dbo.TnTech_TestResults(TestRunDate,TestName,TableName,ActualResult, ExpectedResult,Completed)
 SELECT
 	TestRunDate,TestName,TableName, ActualResult,ExpectedResult,1
 FROM 
-	#temp_Toyota_Distribution;
+	#temp_BI_BDA_UniqueProducts;--temp table 
 
 -- Final, drop the temporary table
-DROP TABLE #temp_Toyota_Distribution; -- Final, drop the temporary table
+DROP TABLE #temp_BI_BDA_UniqueProducts; -- Final, drop the temporary table
 
 SET NOCOUNT OFF;
 
