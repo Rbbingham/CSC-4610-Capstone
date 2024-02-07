@@ -1,7 +1,6 @@
 USE [CapstoneDB]
 GO
 
--- TODO: drop result bit
 -- TODO: convert datetime to date
 -- TODO: ID is a weak identifier, find another solution
 CREATE TABLE [dbo].[TnTech_TestResults](
