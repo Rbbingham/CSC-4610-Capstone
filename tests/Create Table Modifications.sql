@@ -1,13 +1,6 @@
 USE [CapstoneDB]
 GO
 
-/****** Object:  Table [dbo].[TnTech_TestResults]    Script Date: 2/1/2024 4:20:07 PM ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
-
 CREATE TABLE [dbo].[TnTech_TestResults](
 	[ID] bigint IDENTITY(1,1) NOT NULL,
 	[CreatedOn] date NOT NULL,
