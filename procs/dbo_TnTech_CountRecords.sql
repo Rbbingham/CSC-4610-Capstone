@@ -16,7 +16,7 @@ GO
 CREATE OR ALTER PROCEDURE [dbo].[TnTech_CountRecords] (
 	@TableName varchar(256),
 	@Column varchar(256),
-	@Date varchar(256),
+	@Date datetime,
 	@Expected varchar(256)
 )
 AS
@@ -28,39 +28,46 @@ BEGIN
 	END;
 
 	CREATE TABLE #TCR (
-		[TableName] varchar (256) NOT NULL,
+		[TableName] varchar(256) NOT NULL,
+		[TestName] varchar(256) NOT NULL,
 		[ActualResult] bigint NULL,
 		[ExpectedResult] bigint NULL,
-		[CreatedOn] datetime NOT NULL,
-		[CreatedBy] varchar(256) NOT NULL,
+		[CreatedOn] date NOT NULL, -- 
+		[CreatedBy] varchar(256) NULL,
 		[ModifiedOn] datetime NULL,
 		[ModifiedBy] varchar(256) NULL,
-		[Completed] bit NOT NULL,
 	);
 	
 	DECLARE @Command nvarchar(max);
 	SET @Command = 
-		'SELECT COUNT(DISTINCT ' + @Column + '), ' + @Expected + ', GETDATE() AS CreatedOn, NULL AS ModifiedOn, NULL AS ModifiedBy, 1 FROM ' + @TableName + ' WHERE ' + @Date + ' = CAST(GETDATE() AS DATE)';
+		'SELECT ''' 
+			+ @TableName 
+			+ ''', COUNT(DISTINCT ' + @Column + '), ' 
+			+ @Expected 
+			+ ', GETDATE() AS CreatedOn
+			, ''[CapstoneDB].[dbo].[TnTech_CountRecords]''
+			, NULL AS ModifiedOn
+			, NULL AS ModifiedBy
+		FROM ' 
+			+ @TableName 
+		+ ' WHERE ''' + CONVERT(varchar(10), @Date, 101) + ''' = CAST(GETDATE() AS DATE)';
 
+	INSERT INTO 
+		#TCR(TableName, ActualResult, ExpectedResult, CreatedOn, CreatedBy, ModifiedOn, ModifiedBy)
 	EXEC(@Command);
 
-	--INSERT INTO 
-	--	#TCR(TableName, ActualResult, ExpectedResult, CreatedOn, CreatedBy, ModifiedOn, ModifiedBy, Completed)
-	--EXEC(@Command);
-
-	--INSERT INTO
-	--	[dbo].[TnTech_TestResults](TableName, ActualResult, ExpectedResult, CreatedOn, CreatedBy, ModifiedOn, ModifiedBy, Completed)
-	--SELECT 
-	--	TableName,
-	--	ActualResult,
-	--	ExpectedResult,
-	--	CreatedOn,
-	--	CreatedBy,
-	--	ModifiedOn,
-	--	ModifiedBy,
-	--	Completed
-	--FROM
-	--	#TCR;
+	INSERT INTO
+		[dbo].[TnTech_TestResults](TableName, ActualResult, ExpectedResult, CreatedOn, CreatedBy, ModifiedOn, ModifiedBy)
+	SELECT 
+		TableName,
+		ActualResult,
+		ExpectedResult,
+		CreatedOn,
+		CreatedBy,
+		ModifiedOn,
+		ModifiedBy
+	FROM
+		#TCR;
 
 	DROP TABLE #TCR;
 
