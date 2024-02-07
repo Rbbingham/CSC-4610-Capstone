@@ -9,17 +9,17 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE TABLE [dbo].[TnTech_TestResults](
-	[ID] [bigint] IDENTITY(1,1) NOT NULL,
-	[CreatedOn] [date] NOT NULL,
-	[CreatedBy] [varchar](256) NULL,
-	[TestRunDate] [datetime] NULL,
-	[TestName] [varchar](256)NOT NULL,
-	[ModifiedOn] [datetime] NULL,
-	[ModifiedBy] [varchar](256) NULL,
-	[TableName] [varchar](256) NOT NULL,
-	[ActualResult] [bigint] NOT NULL,
-	[ExpectedResult] [bigint] NULL,
-	[Completed] [bit] NOT NULL,
+	[ID] bigint IDENTITY(1,1) NOT NULL,
+	[CreatedOn] date NOT NULL,
+	[CreatedBy] varchar(256) NULL,
+	[TestRunDate] datetime NULL,
+	[TestName] varchar(256)NOT NULL,
+	[ModifiedOn] datetime NULL,
+	[ModifiedBy] varchar(256) NULL,
+	[TableName] varchar(256) NOT NULL,
+	[ActualResult] bigint NOT NULL,
+	[ExpectedResult] bigint NULL,
+	[Completed] bit NOT NULL,
  CONSTRAINT [PK_TnTech_TestResults] PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC --ID is a weak Primary key

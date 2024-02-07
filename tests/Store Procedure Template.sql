@@ -6,7 +6,7 @@
 Use CapstoneDB
 GO
 
-Create Procedure[dbo].[] --name of procedure
+CREATE OR ALTER Procedure[dbo].[] --name of procedure
 AS 
 
 BEGIN
