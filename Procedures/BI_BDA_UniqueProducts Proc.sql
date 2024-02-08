@@ -6,7 +6,7 @@
 Use CapstoneDB
 GO
 
-Create Procedure[dbo].[ID_Count_BI_BDA_UniqueProducts] --name of procedure
+Create or Alter Procedure[dbo].[ID_Count_BI_BDA_UniqueProducts] --name of procedure
 AS 
 
 BEGIN
@@ -22,7 +22,7 @@ CREATE TABLE #temp_BI_BDA_UniqueProducts(
 )
 -- run normal query into temp table
 INSERT INTO 
-	#temp_BI_BDA_UniqueProducts--temp table name
+	#temp_BI_BDA_UniqueProducts(TestRunDate, TableName,TestName,ActualResult,ExpectedResult)--temp table name
 SELECT
 	 Cast(GETDATE() AS DATE),
 	'BI_BDA_UniqueProducts',--name of table
@@ -33,9 +33,9 @@ FROM
 	BI_Feed.dbo.BI_BDA_UniqueProducts with(nolock); --choose table from BI_feed
 --Upload data into CapstoneDB.dbo.TnTech_TestResults
 INSERT INTO 
-	CapstoneDB.dbo.TnTech_TestResults(TestRunDate,TestName,TableName,ActualResult, ExpectedResult,Completed)
+	CapstoneDB.dbo.TnTech_TestResults(TestRunDate,TestName,TableName,ActualResult, ExpectedResult)
 SELECT
-	TestRunDate,TestName,TableName, ActualResult,ExpectedResult,1
+	TestRunDate,TestName,TableName, ActualResult,ExpectedResult
 FROM 
 	#temp_BI_BDA_UniqueProducts;--temp table 
 

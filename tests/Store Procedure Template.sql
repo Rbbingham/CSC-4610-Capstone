@@ -26,9 +26,9 @@ INSERT INTO
 SELECT
 	 Cast(GETDATE() AS DATE),
 	'',--name of table
-	'VIN Count',-- name of test
-	count(distinct Vin),--actual result
-	13000 -- expected result 
+	'',-- name of test
+	count(distinct ),--actual result
+	 -- expected result 
 FROM 
 	BI_Feed.dbo. with(nolock); --choose table from BI_feed
 --Upload data into CapstoneDB.dbo.TnTech_TestResults

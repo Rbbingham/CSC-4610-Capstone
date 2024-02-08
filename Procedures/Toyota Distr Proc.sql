@@ -28,7 +28,7 @@ CREATE TABLE #temp_Toyota_Distribution(
 
 -- run normal query into temp table
 INSERT INTO 
-	#temp_Toyota_Distribution
+	#temp_Toyota_Distribution(TestRunDate, TableName,TestName,ActualResult,ExpectedResult)
 SELECT
 	 Cast(GETDATE() AS DATE),
 	'Toyota_Distribution',
@@ -40,9 +40,9 @@ FROM
 
 --Upload data into CapstoneDB.dbo.TnTech_TestResults
 INSERT INTO 
-	CapstoneDB.dbo.TnTech_TestResults(TestRunDate,TestName,TableName,ActualResult, ExpectedResult,Completed)
+	CapstoneDB.dbo.TnTech_TestResults(TestRunDate,TestName,TableName,ActualResult, ExpectedResult)
 SELECT
-	TestRunDate,TestName,TableName, ActualResult,ExpectedResult,1
+	TestRunDate,TestName,TableName, ActualResult,ExpectedResult
 FROM 
 	#temp_Toyota_Distribution;
 

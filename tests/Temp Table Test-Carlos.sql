@@ -22,7 +22,7 @@ from #temp_bankcore_products;
 DROP TABLE #temp_bankcore_products; -- Final, drop the temporary table
 
 
---6 BI_Feed.dbo.BDA_Institutions
+--6 BI_Feed.dbo.BI_BDA_Institutions
 SELECT -- Ensuring that 20 institutions are available in the table.
 	'BI_BDA_Institutions' as TableName, 
 	'Expected Institution IDs' as TestName, 

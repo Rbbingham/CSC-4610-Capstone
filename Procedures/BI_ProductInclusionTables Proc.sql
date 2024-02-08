@@ -6,7 +6,7 @@
 Use CapstoneDB
 GO
 
-Create Procedure[dbo].[BI_ProductInclusionTables_Procedures] --name of procedure
+Create Or ALTER Procedure[dbo].[BI_ProductInclusionTables_Procedures] --name of procedure
 AS 
 
 BEGIN
@@ -22,7 +22,7 @@ CREATE TABLE #temp_BI_ProductInclusionTables(
 )
 -- runs Merhcant group test
 INSERT INTO 
-	#temp_BI_ProductInclusionTables--temp table name
+	#temp_BI_ProductInclusionTables(TestRunDate, TableName,TestName,ActualResult,ExpectedResult)--temp table name
 SELECT
 	 Cast(GETDATE() AS DATE),
 	'BI_ProductInclusionTables',--name of table
@@ -47,9 +47,9 @@ FROM
 
 --Upload data into CapstoneDB.dbo.TnTech_TestResults
 INSERT INTO 
-	CapstoneDB.dbo.TnTech_TestResults(TestRunDate,TestName,TableName,ActualResult, ExpectedResult,Completed)
+	CapstoneDB.dbo.TnTech_TestResults(TestRunDate,TestName,TableName,ActualResult, ExpectedResult)
 SELECT
-	TestRunDate,TestName,TableName, ActualResult,ExpectedResult,1
+	TestRunDate,TestName,TableName, ActualResult,ExpectedResult
 FROM 
 	#temp_BI_ProductInclusionTables;--temp table 
 
