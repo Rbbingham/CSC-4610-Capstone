@@ -14,10 +14,10 @@ GO
 -- TODO: convert datetime to date
 -- TODO: convert @Expected to bigint
 CREATE OR ALTER PROCEDURE [dbo].[TnTech_CountRecords] (
-	@TableName varchar(256),
-	@Column varchar(256),
+	@TableName nvarchar(256),
+	@Column nvarchar(256),
 	@Date datetime,
-	@Expected varchar(256)
+	@Expected int
 )
 AS
 BEGIN
@@ -42,32 +42,35 @@ BEGIN
 	SET @Command = 
 		'SELECT ''' 
 			+ @TableName 
-			+ ''', COUNT(DISTINCT ' + @Column + '), ' 
-			+ @Expected 
+			+ ''', ''CountRecords''
+			, COUNT(DISTINCT ' + @Column + '), ' 
+			+ CAST(@Expected AS nvarchar(265))
 			+ ', GETDATE() AS CreatedOn
 			, ''[CapstoneDB].[dbo].[TnTech_CountRecords]''
 			, NULL AS ModifiedOn
 			, NULL AS ModifiedBy
 		FROM ' 
-			+ @TableName 
-		+ ' WHERE ''' + CONVERT(varchar(10), @Date, 101) + ''' = CAST(GETDATE() AS DATE)';
+			+ @TableName + ' with (nolock)
+		WHERE ''' + CONVERT(varchar(10), @Date, 101) + ''' = CAST(GETDATE() AS DATE)';
 
 	INSERT INTO 
-		#TCR(TableName, ActualResult, ExpectedResult, CreatedOn, CreatedBy, ModifiedOn, ModifiedBy)
+		#TCR(TableName, TestName, ActualResult, ExpectedResult, CreatedOn, CreatedBy, ModifiedOn, ModifiedBy)
 	EXEC(@Command);
 
-	INSERT INTO
-		[dbo].[TnTech_TestResults](TableName, ActualResult, ExpectedResult, CreatedOn, CreatedBy, ModifiedOn, ModifiedBy)
-	SELECT 
-		TableName,
-		ActualResult,
-		ExpectedResult,
-		CreatedOn,
-		CreatedBy,
-		ModifiedOn,
-		ModifiedBy
-	FROM
-		#TCR;
+	SELECT * FROM #TCR;
+
+	--INSERT INTO
+	--	[dbo].[TnTech_TestResults](TableName, TestName, ActualResult, ExpectedResult, CreatedOn, CreatedBy, ModifiedOn, ModifiedBy)
+	--SELECT 
+	--	TableName,
+	--	ActualResult,
+	--	ExpectedResult,
+	--	CreatedOn,
+	--	CreatedBy,
+	--	ModifiedOn,
+	--	ModifiedBy
+	--FROM
+	--	#TCR;
 
 	DROP TABLE #TCR;
 
@@ -77,9 +80,27 @@ GO
 
 DECLARE @TodaysDate datetime;
 SET @TodaysDate = GETDATE();
-EXEC [dbo].[TnTech_CountRecords] @TableName = '[BI_Feed].[dbo].[Toyota_Inventory]', 
-								 @Column = '[VIN]', 
+EXEC [dbo].[TnTech_CountRecords] @TableName = '[BI_Feed].[dbo].[BI_BankCore_Products]', 
+								 @Column = '[ProductId]', 
 								 @Date = @TodaysDate,
-								 @Expected = '1000';
+								 @Expected = 5;
 
--- SELECT * FROM [dbo].TnTech_TestResults ORDER BY CreatedOn DESC;
+EXEC [dbo].[TnTech_CountRecords] @TableName = '[BI_Feed].[dbo].[BI_BDA_Institutions]', 
+								 @Column = '[institutionId]', 
+								 @Date = @TodaysDate,
+								 @Expected = 20;
+
+EXEC [dbo].[TnTech_CountRecords] @TableName = '[BI_Feed].[dbo].[BI_BDA_UniqueProducts]', 
+								 @Column = '[ID]', 
+								 @Date = @TodaysDate,
+								 @Expected = 3850;
+
+EXEC [dbo].[TnTech_CountRecords] @TableName = '[BI_Feed].[dbo].[BI_ProductInclusionTables]', 
+								 @Column = '[MerchantGroup]', 
+								 @Date = @TodaysDate,
+								 @Expected = 60;
+
+EXEC [dbo].[TnTech_CountRecords] @TableName = '[BI_Feed].[dbo].[Toyota_Distribution]', 
+								 @Column = '[Vin]', 
+								 @Date = @TodaysDate,
+								 @Expected = '13000';
