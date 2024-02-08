@@ -33,9 +33,9 @@ FROM
 	BI_Feed.dbo. with(nolock); --choose table from BI_feed
 --Upload data into CapstoneDB.dbo.TnTech_TestResults
 INSERT INTO 
-	CapstoneDB.dbo.TnTech_TestResults(TestRunDate,TestName,TableName,ActualResult, ExpectedResult,Completed)
+	CapstoneDB.dbo.TnTech_TestResults(TestRunDate,TestName,TableName,ActualResult, ExpectedResult)
 SELECT
-	TestRunDate,TestName,TableName, ActualResult,ExpectedResult,1
+	TestRunDate,TestName,TableName, ActualResult,ExpectedResult
 FROM 
 	;--temp table 
 
