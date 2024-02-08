@@ -57,26 +57,25 @@ BEGIN
 		#TCR(TableName, TestName, ActualResult, ExpectedResult, CreatedOn, CreatedBy, ModifiedOn, ModifiedBy)
 	EXEC(@Command);
 
-	SELECT * FROM #TCR;
-
-	--INSERT INTO
-	--	[dbo].[TnTech_TestResults](TableName, TestName, ActualResult, ExpectedResult, CreatedOn, CreatedBy, ModifiedOn, ModifiedBy)
-	--SELECT 
-	--	TableName,
-	--	ActualResult,
-	--	ExpectedResult,
-	--	CreatedOn,
-	--	CreatedBy,
-	--	ModifiedOn,
-	--	ModifiedBy
-	--FROM
-	--	#TCR;
+	INSERT INTO
+		[dbo].[TnTech_TestResults](TableName, TestName, ActualResult, ExpectedResult, CreatedOn, CreatedBy, ModifiedOn, ModifiedBy)
+	SELECT 
+		TableName,
+		TestName,
+		ActualResult,
+		ExpectedResult,
+		CreatedOn,
+		CreatedBy,
+		ModifiedOn,
+		ModifiedBy
+	FROM
+		#TCR;
 
 	DROP TABLE #TCR;
 
 	SET NOCOUNT OFF;
 END;
-GO 
+GO
 
 DECLARE @TodaysDate datetime;
 SET @TodaysDate = GETDATE();
@@ -104,3 +103,5 @@ EXEC [dbo].[TnTech_CountRecords] @TableName = '[BI_Feed].[dbo].[Toyota_Distribut
 								 @Column = '[Vin]', 
 								 @Date = @TodaysDate,
 								 @Expected = '13000';
+
+SELECT * FROM [CapstoneDB].[dbo].[TnTech_TestResults] ORDER BY ID DESC;
