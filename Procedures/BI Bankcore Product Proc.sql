@@ -6,12 +6,17 @@
 Use CapstoneDB
 GO
 
-CREATE or ALTER PROCEDURE [dbo].[Product_ID_Count_BI_BankCore_Products] --name of procedure
+CREATE or ALTER PROCEDURE [dbo].[BI_Health_BI_BankCore_Products] --name of procedure
 AS 
 
 BEGIN
 
 SET NOCOUNT ON;
+
+IF OBJECT_ID('tempdb.dbo.temp_BI_BankCore_Products') IS NOT NULL BEGIN
+	DROP TABLE #temp_BI_BankCore_Products
+END;
+
 --Create temp table 
 CREATE TABLE #temp_BI_BankCore_Products(
 	[TestRunDate][date]NOT NULL,

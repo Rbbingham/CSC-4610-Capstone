@@ -6,12 +6,18 @@
 Use CapstoneDB
 GO
 
-CREATE OR ALTER Procedure[dbo].[] --name of procedure
+CREATE OR ALTER Procedure[dbo].[BI_Health_] --name of procedure
 AS 
 
 BEGIN
 
 SET NOCOUNT ON;
+
+IF(OBJECT_ID('tempdb.dbo.TEMP_TABLE_NAME') is not null 
+begin 
+	Drop Table  --temp table 
+end;
+
 --Create temp table 
 CREATE TABLE #temp_(
 	[TestRunDate][date]NOT NULL,

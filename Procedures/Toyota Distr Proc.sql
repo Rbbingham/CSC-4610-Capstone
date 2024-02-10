@@ -6,14 +6,14 @@
 Use CapstoneDB
 GO
 
-CREATE OR ALTER Procedure [dbo].[VIN_Count_Toyota_Distribution] 
+CREATE OR ALTER Procedure [dbo].[BI_Health_Toyota_Distribution] 
 AS 
 
 BEGIN
 
 SET NOCOUNT ON;
 
-IF OBJECT_ID('#temp_Toyota_Distribution') IS NOT NULL BEGIN
+IF OBJECT_ID('tempdb.dbo.temp_Toyota_Distribution') IS NOT NULL BEGIN
 	DROP TABLE #temp_Toyota_Distribution
 END;
 

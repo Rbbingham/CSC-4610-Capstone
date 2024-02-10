@@ -7,12 +7,17 @@ Use CapstoneDB
 
 GO
 
-CREATE OR ALTER Procedure[dbo].[BI_Program_CardUsageCounts_Procedure] --name of procedure
+CREATE OR ALTER Procedure[dbo].[BI_Health_BI_Program_CardUsageCounts] --name of procedure
 AS 
 
 BEGIN
 
 SET NOCOUNT ON;
+
+IF OBJECT_ID('tempdb.dbo.temp_BI_Program_CardUsageCounts') IS NOT NULL BEGIN
+	DROP TABLE #temp_BI_Program_CardUsageCounts
+END;
+
 --Create temp table 
 CREATE TABLE #temp_BI_Program_CardUsageCounts(
 	[TestRunDate][date]NOT NULL,

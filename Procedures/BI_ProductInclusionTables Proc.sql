@@ -6,12 +6,17 @@
 Use CapstoneDB
 GO
 
-Create Or ALTER Procedure[dbo].[BI_ProductInclusionTables_Procedures] --name of procedure
+Create Or ALTER Procedure[dbo].[BI_Health_BI_ProductInclusionTables] --name of procedure
 AS 
 
 BEGIN
 
 SET NOCOUNT ON;
+
+--drop the table 
+IF OBJECT_ID('tempdb.dbo.temp_BI_ProductInclusionTables') IS NOT NULL BEGIN
+	DROP TABLE #temp_BI_ProductInclusionTables
+END;
 --Create temp table 
 CREATE TABLE #temp_BI_ProductInclusionTables(
 	[TestRunDate][date]NOT NULL,
