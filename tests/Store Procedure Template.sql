@@ -13,13 +13,14 @@ BEGIN
 
 SET NOCOUNT ON;
 
-IF(OBJECT_ID('tempdb.dbo.TEMP_TABLE_NAME') is not null 
+IF OBJECT_ID('tempdb.dbo.TEMP_TABLE_NAME') is not null 
 begin 
 	Drop Table  --temp table 
 end;
 
 --Create temp table 
 CREATE TABLE #temp_(
+	[CreatedBy][varchar](256) NOT NULL,
 	[TestRunDate][date]NOT NULL,
 	[TableName][varchar](256) NOT NULL,
 	[TestName][varchar](256) NOT NULL,
@@ -28,20 +29,39 @@ CREATE TABLE #temp_(
 )
 -- run normal query into temp table
 INSERT INTO 
-	--temp table name
+	#temp_ --temp table name
+	(CreatedBy,
+	TestRunDate, 
+	TableName,
+	TestName,
+	ActualResult,
+	ExpectedResult)
 SELECT
-	 Cast(GETDATE() AS DATE),
+	 '[CapstoneDB].[dbo].[BI_Health_PROCEDURE_NAME]', -- CreatedBy
+	 Cast(GETDATE() AS DATE), -- TestRunDate
 	'',--name of table
 	'',-- name of test
 	count(distinct ),--actual result
 	 -- expected result 
 FROM 
 	BI_Feed.dbo. with(nolock); --choose table from BI_feed
+
 --Upload data into CapstoneDB.dbo.TnTech_TestResults
 INSERT INTO 
-	CapstoneDB.dbo.TnTech_TestResults(TestRunDate,TestName,TableName,ActualResult, ExpectedResult)
+	CapstoneDB.dbo.TnTech_TestResults
+	(Createdby,
+	TestRunDate,
+	TestName,
+	TableName,
+	ActualResult, 
+	ExpectedResult)
 SELECT
-	TestRunDate,TestName,TableName, ActualResult,ExpectedResult
+	CreatedBy,
+	TestRunDate,
+	TestName,
+	TableName, 
+	ActualResult,
+	ExpectedResult
 FROM 
 	;--temp table 
 

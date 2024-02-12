@@ -19,6 +19,7 @@ END;
 
 --Create temp table 
 CREATE TABLE #temp_Toyota_Distribution(
+	[CreatedBy][varchar](256) NOT NULL,
 	[TestRunDate][date]NOT NULL,
 	[TableName][varchar](256) NOT NULL,
 	[TestName][varchar](256) NOT NULL,
@@ -28,8 +29,15 @@ CREATE TABLE #temp_Toyota_Distribution(
 
 -- run normal query into temp table
 INSERT INTO 
-	#temp_Toyota_Distribution(TestRunDate, TableName,TestName,ActualResult,ExpectedResult)
+	#temp_Toyota_Distribution
+	(CreatedBy,
+	TestRunDate, 
+	TableName,
+	TestName,
+	ActualResult,
+	ExpectedResult)
 SELECT
+	'[CapstoneDB].[dbo].[BI_Health_Toyota_Distribution]',
 	 Cast(GETDATE() AS DATE),
 	'Toyota_Distribution',
 	'VIN Count',
@@ -40,9 +48,20 @@ FROM
 
 --Upload data into CapstoneDB.dbo.TnTech_TestResults
 INSERT INTO 
-	CapstoneDB.dbo.TnTech_TestResults(TestRunDate,TestName,TableName,ActualResult, ExpectedResult)
+	CapstoneDB.dbo.TnTech_TestResults
+	(CreatedBy,
+	TestRunDate,
+	TestName,
+	TableName,
+	ActualResult, 
+	ExpectedResult)
 SELECT
-	TestRunDate,TestName,TableName, ActualResult,ExpectedResult
+	CreatedBy,
+	TestRunDate,
+	TestName,
+	TableName, 
+	ActualResult,
+	ExpectedResult
 FROM 
 	#temp_Toyota_Distribution;
 
