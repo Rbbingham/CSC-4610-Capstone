@@ -11,8 +11,6 @@
 USE [CapstoneDB]
 GO
 
--- TODO: convert datetime to date
--- TODO: convert @Expected to bigint
 CREATE OR ALTER PROCEDURE [dbo].[TnTech_CountRecords] (
 	@TableName nvarchar(256),
 	@Column nvarchar(256),
