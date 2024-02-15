@@ -45,6 +45,8 @@ SELECT
 FROM 
 	BI_Feed.dbo.BI_BankCore_Products with(nolock); --choose table from BI_feed
 
+
+
 --Upload data into CapstoneDB.dbo.TnTech_TestResults
 INSERT INTO 
 	CapstoneDB.dbo.TnTech_TestResults(

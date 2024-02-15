@@ -46,9 +46,16 @@ SELECT
 FROM 
 	BI_Feed.dbo.Toyota_Distribution with(nolock);
 
+	--Altering temp table to add deviation column
+	ALTER TABLE #temp_Toyota_Distribution ADD Deviation INT;
+
+--Updates the Deviation column with Actual-Expected
+	UPDATE #temp_Toyota_Distribution
+	SET Deviation = ActualResult - ExpectedResult;
+
 --Upload data into CapstoneDB.dbo.TnTech_TestResults
 INSERT INTO 
-	CapstoneDB.dbo.TnTech_TestResults
+	CapstoneDB.dbo.BI_HealthResults
 	(CreatedBy,
 	TestRunDate,
 	TestName,
