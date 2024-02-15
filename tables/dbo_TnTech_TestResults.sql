@@ -1,12 +1,12 @@
 USE [CapstoneDB]
 GO
 
-IF OBJECT_ID('CapstoneDB.dbo.TnTech_TestResults') IS NOT NULL
+IF OBJECT_ID('CapstoneDB.dbo.BI_HealthResults') IS NOT NULL
 BEGIN
-	DROP TABLE [CapstoneDB].[dbo].[TnTech_TestResults];
+	DROP TABLE [CapstoneDB].[dbo].[BI_HealthResults];
 END
 
-CREATE TABLE [dbo].[TnTech_TestResults](
+CREATE TABLE [dbo].[BI_HealthResults](
 	[TableName] varchar(256) NOT NULL,
 	[TestRunDate] date NOT NULL,
 	[TestName] varchar(256) NOT NULL,
