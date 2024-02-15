@@ -12,7 +12,7 @@ CREATE TABLE [dbo].[TnTech_TestResults](
 	[TestName] varchar(256) NOT NULL,
 	[ActualResult] bigint NOT NULL,
 	[ExpectedResult] bigint NOT NULL,
-	[Deviation] bigint NULL,
+	[Deviation] bigint NOT NULL,
 	[CreatedOn] date NOT NULL CONSTRAINT [DF_TnTech_TestResults_CreatedOn] DEFAULT(GETDATE()),
 	[CreatedBy] varchar(256) NOT NULL,
 	[ModifiedOn] date NULL,
