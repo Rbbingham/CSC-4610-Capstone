@@ -19,6 +19,7 @@ END;
 
 --Create temp table 
 CREATE TABLE #temp_BI_BankCore_Products(
+	[CreatedBy][varchar](256) NOT NULL,
 	[TestRunDate][date]NOT NULL,
 	[TableName][varchar](256) NOT NULL,
 	[TestName][varchar](256) NOT NULL,
@@ -27,8 +28,15 @@ CREATE TABLE #temp_BI_BankCore_Products(
 )
 -- run normal query into temp table
 INSERT INTO 
-	#temp_BI_BankCore_Products(TestRunDate, TableName,TestName,ActualResult,ExpectedResult)--temp table name
+	#temp_BI_BankCore_Products(
+	CreatedBy,
+	TestRunDate, 
+	TableName,
+	TestName,
+	ActualResult,
+	ExpectedResult)--temp table name
 SELECT
+	'[CapstoneDB].[dbo].[BI_Health_BI_BankCore_Products]',
 	 Cast(GETDATE() AS DATE),
 	'BI_BankCore_Products',--name of table
 	'Product ID Count',-- name of test
@@ -39,9 +47,20 @@ FROM
 
 --Upload data into CapstoneDB.dbo.TnTech_TestResults
 INSERT INTO 
-	CapstoneDB.dbo.TnTech_TestResults(TestRunDate,TestName,TableName,ActualResult, ExpectedResult)
+	CapstoneDB.dbo.TnTech_TestResults(
+	CreatedBy,
+	TestRunDate,
+	TestName,
+	TableName,
+	ActualResult,
+	ExpectedResult)
 SELECT
-	TestRunDate,TestName,TableName, ActualResult,ExpectedResult
+	CreatedBy,
+	TestRunDate,
+	TestName,
+	TableName, 
+	ActualResult,
+	ExpectedResult
 FROM 
 	#temp_BI_BankCore_Products;--temp table 
 

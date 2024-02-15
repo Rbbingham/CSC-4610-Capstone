@@ -29,7 +29,13 @@ CREATE TABLE #temp_CardCount(
 )
 -- run normal query into temp table
 INSERT INTO 
-	#temp_CardCount(CreatedBy,TestRunDate,TableName,TestName,ActualResult,ExpectedResult)--temp table name
+	#temp_CardCount(
+	CreatedBy,
+	TestRunDate,
+	TableName,
+	TestName,
+	ActualResult,
+	ExpectedResult)--temp table name
 SELECT
 	 '[CapstoneDB].[dbo].[BI_Health_CardCount]', 
 	 Cast(GETDATE() AS DATE),
@@ -45,9 +51,20 @@ UPDATE #temp_CardCount
 SET Deviation = ActualResult - ExpectedResult; -- Updating Deviation to the deviation
 --Upload data into CapstoneDB.dbo.TnTech_TestResults
 INSERT INTO 
-	CapstoneDB.dbo.TnTech_TestResults(CreatedBy,TestRunDate,TableName,TestName,ActualResult,ExpectedResult)
+	CapstoneDB.dbo.TnTech_TestResults(
+	CreatedBy,
+	TestRunDate,
+	TableName,
+	TestName,
+	ActualResult,
+	ExpectedResult)
 SELECT
-	CreatedBy,TestRunDate,TestName,TableName, ActualResult, ExpectedResult
+	CreatedBy,
+	TestRunDate,
+	TestName,
+	TableName, 
+	ActualResult,
+	ExpectedResult
 FROM 
 	#temp_CardCount;--temp table 
 
