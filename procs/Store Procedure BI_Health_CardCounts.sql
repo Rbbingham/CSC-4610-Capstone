@@ -8,7 +8,7 @@
 
 ******************************************************************************/
 
-Use [CapstoneDB]
+USE [CapstoneDB]
 GO
 
 CREATE OR ALTER PROCEDURE [dbo].[BI_Health_CardCount]
@@ -51,7 +51,7 @@ BEGIN
 	SELECT
 		'BI_CardCounts' AS TableName,
 		 CAST(GETDATE() AS DATE) AS TestRunDate,
-		'Count Records' AS TestName,
+		'Count of ProductID' AS TestName,
 		COUNT(DISTINCT productId) AS ActualResult,
 		3800 AS ExpectedResult,
 		(COUNT(DISTINCT productId) - 3800) AS Deviation,
