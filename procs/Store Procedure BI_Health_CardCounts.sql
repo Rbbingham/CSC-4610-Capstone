@@ -51,20 +51,22 @@ UPDATE #temp_CardCount
 SET Deviation = ActualResult - ExpectedResult; -- Updating Deviation to the deviation
 --Upload data into CapstoneDB.dbo.TnTech_TestResults
 INSERT INTO 
-	CapstoneDB.dbo.TnTech_TestResults(
+	CapstoneDB.dbo.BI_HealthResults(
 	CreatedBy,
 	TestRunDate,
 	TableName,
 	TestName,
 	ActualResult,
-	ExpectedResult)
+	ExpectedResult,
+	Deviation)
 SELECT
 	CreatedBy,
 	TestRunDate,
 	TestName,
 	TableName, 
 	ActualResult,
-	ExpectedResult
+	ExpectedResult,
+	Deviation
 FROM 
 	#temp_CardCount;--temp table 
 

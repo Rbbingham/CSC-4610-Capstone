@@ -8,7 +8,7 @@
 	None
 ************************************************************/
 
-CREATE PROCEDURE CHECK_MonthlyProductStats
+CREATE OR ALTER PROCEDURE CHECK_MonthlyProductStats
 AS
 BEGIN
 SET NOCOUNT ON;

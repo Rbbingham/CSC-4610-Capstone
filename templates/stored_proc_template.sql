@@ -44,23 +44,32 @@ BEGIN
 		 -- expected result 
 	FROM 
 		BI_Feed.dbo. with(nolock); --choose table from BI_feed
+	
+	--Altering temp table to add deviation column
+	ALTER TABLE #tempTableName ADD Deviation INT;
+
+	--Updates the Deviation column with Actual-Expected
+	UPDATE --tempTableName
+	SET Deviation = ActualResult - ExpectedResult;
 
 	--Upload data into CapstoneDB.dbo.TnTech_TestResults
 	INSERT INTO 
-		CapstoneDB.dbo.TnTech_TestResults
+		CapstoneDB.dbo.BI_HealthResults
 		(Createdby,
 		TestRunDate,
 		TestName,
 		TableName,
 		ActualResult, 
-		ExpectedResult)
+		ExpectedResult,
+		Deviation)
 	SELECT
 		CreatedBy,
 		TestRunDate,
 		TestName,
 		TableName, 
 		ActualResult,
-		ExpectedResult
+		ExpectedResult,
+		Deviation
 	FROM 
 		;--temp table 
 
