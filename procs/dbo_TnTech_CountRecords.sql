@@ -21,11 +21,11 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
-	IF OBJECT_ID('#TCR') IS NOT NULL BEGIN
+	IF OBJECT_ID('tempdb.dbo.TCR') IS NOT NULL BEGIN
 		DROP TABLE #TCR
 	END;
 
-	CREATE TABLE #TCR (
+	CREATE TABLE #TCR(
 		[TableName] varchar(256) NOT NULL,
 		[TestName] varchar(256) NOT NULL,
 		[ActualResult] bigint NULL,
@@ -52,11 +52,27 @@ BEGIN
 		WHERE ''' + CONVERT(varchar(10), @Date, 101) + ''' = CAST(GETDATE() AS DATE)';
 
 	INSERT INTO 
-		#TCR(TableName, TestName, ActualResult, ExpectedResult, CreatedOn, CreatedBy, ModifiedOn, ModifiedBy)
+		#TCR(
+			TableName, 
+			TestName, 
+			ActualResult, 
+			ExpectedResult, 
+			CreatedOn, 
+			CreatedBy, 
+			ModifiedOn, 
+			ModifiedBy)
 	EXEC(@Command);
 
 	INSERT INTO
-		[dbo].[TnTech_TestResults](TableName, TestName, ActualResult, ExpectedResult, CreatedOn, CreatedBy, ModifiedOn, ModifiedBy)
+		[dbo].[TnTech_TestResults](
+			TableName, 
+			TestName, 
+			ActualResult, 
+			ExpectedResult, 
+			CreatedOn, 
+			CreatedBy, 
+			ModifiedOn, 
+			ModifiedBy)
 	SELECT 
 		TableName,
 		TestName,

@@ -23,47 +23,69 @@ BEGIN
 
 	--Create temp table 
 	CREATE TABLE #temp_BI_BDA_UniqueProducts(
-		[CreatedBy][varchar](256) NOT NULL,
-		[TestRunDate][date]NOT NULL,
-		[TableName][varchar](256) NOT NULL,
-		[TestName][varchar](256) NOT NULL,
-		[ActualResult] [bigint] NOT NULL,
-		[ExpectedResult] [bigint] NULL,
-	)
+		[TableName] varchar(256) NOT NULL,
+		[TestRunDate] date NOT NULL,
+		[TestName] varchar(256) NOT NULL,
+		[ActualResult] bigint NOT NULL,
+		[ExpectedResult] bigint NOT NULL,
+		[Deviation] bigint NOT NULL,
+		[CreatedOn] date NOT NULL,
+		[CreatedBy] varchar(256) NOT NULL,
+		[ModifiedOn] date NULL,
+		[ModifiedBy] varchar(256) NULL
+	);
+
 	-- run normal query into temp table
 	INSERT INTO 
 		#temp_BI_BDA_UniqueProducts(
-		CreatedBy,
-		TestRunDate, 
-		TableName,
-		TestName,
-		ActualResult,
-		ExpectedResult)--temp table name
+			TableName,
+			TestRunDate, 
+			TestName,
+			ActualResult,
+			ExpectedResult,
+			Deviation,
+			CreatedOn,
+			CreatedBy,
+			ModifiedOn,
+			ModifiedBy)
 	SELECT
-		'[CapstoneDB].[dbo].[BI_Health_BI_BDA_UniqueProducts]',
-		 Cast(GETDATE() AS DATE),
-		'BI_BDA_UniqueProducts',--name of table
-		'ID Count',-- name of test
-		count(distinct ID),--actual result
-		3850 -- expected result 
+		'BI_BDA_UniqueProducts' AS TableName,
+		 CAST(GETDATE() AS DATE) AS TestRunDate,
+		'ID Count' AS TestName,
+		COUNT(DISTINCT ID) AS ActualResult,
+		3850 AS ExpectedResult,
+		(COUNT(DISTINCT ID) - 3850) AS Deviation,
+		CAST(GETDATE() AS DATE) AS CreatedOn,
+		'[CapstoneDB].[dbo].[BI_Health_BI_BDA_UniqueProducts]' AS CreatedBy,
+		NULL AS ModifiedOn,
+		NULL AS ModifiedBy
 	FROM 
-		BI_Feed.dbo.BI_BDA_UniqueProducts with(nolock); --choose table from BI_feed
+		BI_Feed.dbo.BI_BDA_UniqueProducts with (nolock); -- choose table from BI_feed
+
 	--Upload data into CapstoneDB.dbo.TnTech_TestResults
 	INSERT INTO 
 		CapstoneDB.dbo.TnTech_TestResults(
-		CreatedBy,
-		TestRunDate,
-		TestName,
-		TableName,
-		ActualResult, 
-		ExpectedResult)
+			TableName,
+			TestRunDate, 
+			TestName,
+			ActualResult,
+			ExpectedResult,
+			Deviation,
+			CreatedOn,
+			CreatedBy,
+			ModifiedOn,
+			ModifiedBy)
 	SELECT
-		CreatedBy,
-		TestRunDate,
-		TestName,
 		TableName,
+		TestRunDate, 
+		TestName,
 		ActualResult,
-		ExpectedResult
+		ExpectedResult,
+		Deviation,
+		CreatedOn,
+		CreatedBy,
+		ModifiedOn,
+		ModifiedBy
 	FROM 
 		#temp_BI_BDA_UniqueProducts;
 

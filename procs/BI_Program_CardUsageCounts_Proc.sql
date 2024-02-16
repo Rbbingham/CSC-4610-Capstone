@@ -23,49 +23,71 @@ BEGIN
 
 	--Create temp table 
 	CREATE TABLE #temp_BI_Program_CardUsageCounts(
-		[CreatedBy][varchar](256) NOT NULL,
-		[TestRunDate][date]NOT NULL,
-		[TableName][varchar](256) NOT NULL,
-		[TestName][varchar](256) NOT NULL,
-		[ActualResult] [bigint] NOT NULL,
-		[ExpectedResult] [bigint] NULL,
-	)
+		[TableName] varchar(256) NOT NULL,
+		[TestRunDate] date NOT NULL,
+		[TestName] varchar(256) NOT NULL,
+		[ActualResult] bigint NOT NULL,
+		[ExpectedResult] bigint NOT NULL,
+		[Deviation] bigint NOT NULL,
+		[CreatedOn] date NOT NULL,
+		[CreatedBy] varchar(256) NOT NULL,
+		[ModifiedOn] date NULL,
+		[ModifiedBy] varchar(256) NULL
+	);
+
 	-- run normal query into temp table
 	INSERT INTO 
-	#temp_BI_Program_CardUsageCounts(
-		CreatedBy,
-		TestRunDate,
-		TableName,
-		TestName,
-		ActualResult,
-		ExpectedResult)
+		#temp_BI_Program_CardUsageCounts(
+			TableName,
+			TestRunDate, 
+			TestName,
+			ActualResult,
+			ExpectedResult,
+			Deviation,
+			CreatedOn,
+			CreatedBy,
+			ModifiedOn,
+			ModifiedBy)
 	SELECT
-		'[CapstoneDB].[dbo].[BI_Health_BI_Program_CardUsageCounts]',
-		 Cast(GETDATE() AS DATE),
-		'BI_Program_CardUsageCounts',--name of table
-		'Program ID Count',-- name of test
-		count(distinct ProgramId),--actual result
-		 3200-- expected result 
+		'BI_Program_CardUsageCounts' AS TableName,
+		 CAST(GETDATE() AS DATE) AS TestRunDate,
+		'Program ID Count' AS TestName,
+		COUNT(DISTINCT ProgramId) AS ActualResult,
+		3200 AS ExpectedResult,
+		(COUNT(DISTINCT ProgramId) - 3200) AS Deviation,
+		CAST(GETDATE() AS DATE) AS CreatedOn,
+		'[CapstoneDB].[dbo].[BI_Health_BI_Program_CardUsageCounts]' AS CreatedBy,
+		NULL AS ModifiedOn,
+		NULL AS ModifiedBy
 	FROM 
-		BI_Feed.dbo.BI_Program_CardUsageCounts with(nolock); --choose table from BI_feed
+		BI_Feed.dbo.BI_Program_CardUsageCounts with (nolock); -- choose table from BI_feed
+
 	--Upload data into CapstoneDB.dbo.TnTech_TestResults
 	INSERT INTO 
 		CapstoneDB.dbo.TnTech_TestResults(
-		CreatedBy,
-		TestRunDate,
-		TestName,
-		TableName,
-		ActualResult, 
-		ExpectedResult)
+			TableName,
+			TestRunDate, 
+			TestName,
+			ActualResult,
+			ExpectedResult,
+			Deviation,
+			CreatedOn,
+			CreatedBy,
+			ModifiedOn,
+			ModifiedBy)
 	SELECT
-		CreatedBy,
-		TestRunDate,
+		TableName,
+		TestRunDate, 
 		TestName,
-		TableName, 
 		ActualResult,
-		ExpectedResult
+		ExpectedResult,
+		Deviation,
+		CreatedOn,
+		CreatedBy,
+		ModifiedOn,
+		ModifiedBy
 	FROM 
-		#temp_BI_Program_CardUsageCounts;--temp table 
+		#temp_BI_Program_CardUsageCounts;
 
 	DROP TABLE #temp_BI_Program_CardUsageCounts;
 
