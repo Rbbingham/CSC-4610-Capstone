@@ -8,7 +8,7 @@
 
 ******************************************************************************/
 
-Use CapstoneDB
+Use [CapstoneDB]
 GO
 
 CREATE OR ALTER PROCEDURE [dbo].[BI_Health_CardCount]
