@@ -17,6 +17,6 @@ CREATE TABLE [dbo].[BI_HealthResults](
 	[CreatedBy] varchar(256) NOT NULL,
 	[ModifiedOn] date NULL,
 	[ModifiedBy] varchar(256) NULL,
-	CONSTRAINT [PK_TnTech_TestResults] PRIMARY KEY CLUSTERED ([TestRunDate], [TableName], [TestName] ASC),
+	CONSTRAINT [PK_TnTech_TestResults] PRIMARY KEY CLUSTERED ([TestRunDate] DESC, [TableName] ASC, [TestName] DESC),
 )
 GO
