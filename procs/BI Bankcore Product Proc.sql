@@ -16,7 +16,7 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
-	IF OBJECT_ID('tempdb.dbo.temp_BI_BankCore_Products') IS NOT NULL 
+	IF OBJECT_ID('tempdb.dbo.#temp_BI_BankCore_Products') IS NOT NULL 
 	BEGIN
 		DROP TABLE #temp_BI_BankCore_Products
 	END;

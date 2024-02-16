@@ -16,12 +16,12 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
-	IF OBJECT_ID('tempdb.dbo.temp_CardCount') IS NOT NULL
+	IF OBJECT_ID('tempdb.dbo.#temp_CardCount') IS NOT NULL
 	BEGIN
 		DROP TABLE #temp_CardCount
 	END;
 
-	--Create temp table 
+	-- Create temp table 
 	CREATE TABLE #temp_CardCount(
 		[TableName] varchar(256) NOT NULL,
 		[TestRunDate] date NOT NULL,
