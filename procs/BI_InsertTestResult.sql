@@ -16,11 +16,11 @@ BEGIN
 	IF EXISTS ( SELECT * FROM CapstoneDB.dbo.BI_HealthResults WHERE TableName = @TableName AND TestName = @TestName AND TestRunDate = @TestRunDate)
 	BEGIN
 		UPDATE CapstoneDB.dbo.BI_HealthResults
-		SET [CreatedOn] = @CreatedOn,
-			[TestRunDate] = @TestRunDate,
+		SET
 			[ActualResult] = @ActualResult,
 			[ExpectedResult] = @ExpectedResult,
 			[Deviation] = @Deviation,
+			[CreatedOn] = @CreatedOn,
 			[CreatedBy] = @CreatedBy,
 			[ModifiedOn] = @ModifiedOn,
 			[ModifiedBy] = @ModifiedBy
@@ -36,7 +36,7 @@ BEGIN
 			@TestRunDate,
 			@TestName,
 			@ActualResult,
-			@ExpectedResultm
+			@ExpectedResult,
 			@Deviation,
 			@CreatedOn,
 			@CreatedBy,
@@ -44,4 +44,6 @@ BEGIN
 			@ModifiedBy
 			);
 	END
+
+	SET NOCOUNT OFF;
 END;
