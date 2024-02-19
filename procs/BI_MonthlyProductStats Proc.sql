@@ -2,6 +2,8 @@
 -- Author:      Collin Cunningham
 -- Create Date: 2/12/2024
 -- Description: ID Count test for BI_MonthlyProductStats table
+
+--Update 2/19/2024:Updated result table to BI_HealthResults
 -- =============================================
 Use CapstoneDB
 GO
@@ -42,9 +44,9 @@ BEGIN
 	FROM 
 		BI_Feed.dbo.BI_MonthlyProductStats with(nolock); --choose table from BI_feed
 
-	--Upload data into CapstoneDB.dbo.TnTech_TestResults
+	--Upload data into CapstoneDB.dbo.BI_HealthResults
 	INSERT INTO 
-		CapstoneDB.dbo.TnTech_TestResults
+		CapstoneDB.dbo.BI_HealthResults
 		(Createdby,
 		TestRunDate,
 		TestName,
