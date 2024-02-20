@@ -1,3 +1,6 @@
+Use CapstoneDB
+GO
+
 -- =============================================
 -- Author:      Collin Cunningham
 -- Create Date: 2/12/2024
@@ -5,8 +8,6 @@
 
 --Update 2/19/2024:Updated result table to BI_HealthResults
 -- =============================================
-Use CapstoneDB
-GO
 
 CREATE OR ALTER Procedure[dbo].[BI_Health_BI_MonthlyProductStats]
 AS 
@@ -38,8 +39,8 @@ BEGIN
 		 '[CapstoneDB].[dbo].[BI_Health_BI_MonthlyProductStats]', -- CreatedBy
 		 Cast(GETDATE() AS DATE), -- TestRunDate
 		'BI_MonthlyProductStats',--name of table
-		'ID Count',-- name of test
-		count(distinct ID),--actual result
+		'Integrity Check',-- name of test
+		count(distinct ProductId),--actual result
 		 2000 -- expected result 
 	FROM 
 		BI_Feed.dbo.BI_MonthlyProductStats with(nolock); --choose table from BI_feed
@@ -52,14 +53,16 @@ BEGIN
 		TestName,
 		ActualResult,
 		ExpectedResult, 
-		CreatedBy)
+		CreatedBy,
+		Deviation)
 	SELECT
 		TableName,
 		TestRunDate,
 		TestName,
 		ActualResult,
 		ExpectedResult,
-		CreatedBy
+		CreatedBy,
+		(ActualResult - ExpectedResult) as Deviation
 	FROM 
 		#temp_BI_MonthlyProductStats;--temp table 
 
