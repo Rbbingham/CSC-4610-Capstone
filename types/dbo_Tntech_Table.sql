@@ -2,10 +2,15 @@ USE [CapstoneDB]
 GO
 
 CREATE TYPE [dbo].[TnTech_TableType] AS TABLE (
-	[ID] [bigint] IDENTITY(1, 1) NOT NULL,
-	[CreatedOn] [datetime] NOT NULL,
-	[CreatedBy] [varchar](256) NULL,
-	[ModifiedOn] [datetime] NULL,
-	[ModifiedBy] [varchar](256) NULL
+	[TableName] varchar(256) NOT NULL,
+	[TestRunDate] date NOT NULL,
+	[TestName] varchar(256) NOT NULL,
+	[ActualResult] bigint NOT NULL,
+	[ExpectedResult] bigint NOT NULL,
+	[Deviation] bigint NOT NULL,
+	[CreatedOn] date NOT NULL,
+	[CreatedBy] varchar(256) NOT NULL,
+	[ModifiedOn] date NULL,
+	[ModifiedBy] varchar(256) NULL
 )
 GO
