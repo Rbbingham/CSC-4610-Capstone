@@ -47,19 +47,19 @@ BEGIN
 	--Upload data into CapstoneDB.dbo.BI_HealthResults
 	INSERT INTO 
 		CapstoneDB.dbo.BI_HealthResults
-		(Createdby,
+		(TableName,
 		TestRunDate,
 		TestName,
-		TableName,
-		ActualResult, 
-		ExpectedResult)
-	SELECT
-		CreatedBy,
-		TestRunDate,
-		TestName,
-		TableName, 
 		ActualResult,
-		ExpectedResult
+		ExpectedResult, 
+		CreatedBy)
+	SELECT
+		TableName,
+		TestRunDate,
+		TestName,
+		ActualResult,
+		ExpectedResult,
+		CreatedBy
 	FROM 
 		#temp_BI_MonthlyProductStats;--temp table 
 
