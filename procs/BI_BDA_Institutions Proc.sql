@@ -62,9 +62,9 @@ BEGIN
 	FROM 
 		BI_Feed.dbo.BI_BDA_Institutions with (nolock); --choose table from BI_feed
 
-	--Upload data into CapstoneDB.dbo.TnTech_TestResults
+	--Upload data into CapstoneDB.dbo.BI_HealthResults
 	INSERT INTO 
-		CapstoneDB.dbo.TnTech_TestResults(
+		CapstoneDB.dbo.BI_HealthResults(
 			TableName,
 			TestRunDate, 
 			TestName,

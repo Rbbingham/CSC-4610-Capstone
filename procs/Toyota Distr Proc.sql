@@ -61,9 +61,9 @@ BEGIN
 	FROM 
 		BI_Feed.dbo.Toyota_Distribution with (nolock);
 
-	-- upload data into CapstoneDB.dbo.TnTech_TestResults
+	-- upload data into CapstoneDB.dbo.BI_HealthResults
 	INSERT INTO 
-		CapstoneDB.dbo.TnTech_TestResults(
+		CapstoneDB.dbo.BI_HealthResults(
 			TableName,
 			TestRunDate, 
 			TestName,
