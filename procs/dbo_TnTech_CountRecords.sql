@@ -11,42 +11,43 @@
 USE [CapstoneDB]
 GO
 
--- TODO: convert datetime to date
--- TODO: convert @Expected to bigint
 CREATE OR ALTER PROCEDURE [dbo].[TnTech_CountRecords] (
 	@TableName nvarchar(256),
 	@Column nvarchar(256),
 	@Date datetime,
-	@Expected int
+	@Expected bigint
 )
 AS
 BEGIN
 	SET NOCOUNT ON;
 
-	IF OBJECT_ID('#TCR') IS NOT NULL BEGIN
+	IF OBJECT_ID('tempdb.dbo.#TCR') IS NOT NULL BEGIN
 		DROP TABLE #TCR
 	END;
 
-	CREATE TABLE #TCR (
+	CREATE TABLE #TCR(
 		[TableName] varchar(256) NOT NULL,
+		[TestRunDate] date NOT NULL,
 		[TestName] varchar(256) NOT NULL,
-		[ActualResult] bigint NULL,
-		[ExpectedResult] bigint NULL,
-		[CreatedOn] date NOT NULL, -- 
-		[CreatedBy] varchar(256) NULL,
-		[ModifiedOn] datetime NULL,
-		[ModifiedBy] varchar(256) NULL,
+		[ActualResult] bigint NOT NULL,
+		[ExpectedResult] bigint NOT NULL,
+		[Deviation] bigint NOT NULL,
+		[CreatedOn] date NOT NULL,
+		[CreatedBy] varchar(256) NOT NULL,
+		[ModifiedOn] date NULL,
+		[ModifiedBy] varchar(256) NULL
 	);
 	
 	DECLARE @Command nvarchar(max);
 	SET @Command = 
 		'SELECT ''' 
-			+ @TableName 
-			+ ''', ''CountRecords''
+			+ @TableName
+			+ ''', GETDATE() AS TestRunDate
+			, ''CountRecords''
 			, COUNT(DISTINCT ' + @Column + '), ' 
 			+ CAST(@Expected AS nvarchar(265))
 			+ ', GETDATE() AS CreatedOn
-			, ''[CapstoneDB].[dbo].[TnTech_CountRecords]''
+			, ''[CapstoneDB].[dbo].[TnTech_CountRecords]'' AS CreatedBy
 			, NULL AS ModifiedOn
 			, NULL AS ModifiedBy
 		FROM ' 
@@ -54,16 +55,38 @@ BEGIN
 		WHERE ''' + CONVERT(varchar(10), @Date, 101) + ''' = CAST(GETDATE() AS DATE)';
 
 	INSERT INTO 
-		#TCR(TableName, TestName, ActualResult, ExpectedResult, CreatedOn, CreatedBy, ModifiedOn, ModifiedBy)
+		#TCR(
+			TableName,
+			TestRunDate, 
+			TestName,
+			ActualResult,
+			ExpectedResult,
+			Deviation,
+			CreatedOn,
+			CreatedBy,
+			ModifiedOn,
+			ModifiedBy)
 	EXEC(@Command);
 
 	INSERT INTO
-		[dbo].[TnTech_TestResults](TableName, TestName, ActualResult, ExpectedResult, CreatedOn, CreatedBy, ModifiedOn, ModifiedBy)
+		[CapstoneDB].[dbo].[TnTech_TestResults](
+			TableName,
+			TestRunDate, 
+			TestName,
+			ActualResult,
+			ExpectedResult,
+			Deviation,
+			CreatedOn,
+			CreatedBy,
+			ModifiedOn,
+			ModifiedBy)
 	SELECT 
 		TableName,
+		TestRunDate, 
 		TestName,
 		ActualResult,
 		ExpectedResult,
+		Deviation,
 		CreatedOn,
 		CreatedBy,
 		ModifiedOn,

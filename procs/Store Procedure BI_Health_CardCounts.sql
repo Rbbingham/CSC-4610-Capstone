@@ -1,28 +1,28 @@
 /******************************************************************************
 	
-	CREATOR:	Carlos Escudero
+	CREATOR:	Lorenzo Abellanosa
 
-	CREATED:	2024/02/02
+	CREATED:	2024/02/12
 
-	PURPOSE:	ID Count for BI_BDA_UniqueProducts.
+	PURPOSE:	Created Test run procedure for CardCounts table.
 
 ******************************************************************************/
 
 USE [CapstoneDB]
 GO
 
-CREATE OR ALTER PROCEDURE [dbo].[BI_Health_BI_BDA_UniqueProducts]
+CREATE OR ALTER PROCEDURE [dbo].[BI_Health_CardCount]
 AS 
 BEGIN
 	SET NOCOUNT ON;
 
-	IF OBJECT_ID('tempdb.dbo.#temp_BI_BDA_UniqueProducts') IS NOT NULL 
+	IF OBJECT_ID('tempdb.dbo.#temp_CardCount') IS NOT NULL
 	BEGIN
-		DROP TABLE #temp_BI_BDA_UniqueProducts
+		DROP TABLE #temp_CardCount
 	END;
 
-	--Create temp table 
-	CREATE TABLE #temp_BI_BDA_UniqueProducts(
+	-- Create temp table 
+	CREATE TABLE #temp_CardCount(
 		[TableName] varchar(256) NOT NULL,
 		[TestRunDate] date NOT NULL,
 		[TestName] varchar(256) NOT NULL,
@@ -37,7 +37,7 @@ BEGIN
 
 	-- run normal query into temp table
 	INSERT INTO 
-		#temp_BI_BDA_UniqueProducts(
+		#temp_CardCount(
 			TableName,
 			TestRunDate, 
 			TestName,
@@ -49,22 +49,22 @@ BEGIN
 			ModifiedOn,
 			ModifiedBy)
 	SELECT
-		'BI_BDA_UniqueProducts' AS TableName,
+		'BI_CardCounts' AS TableName,
 		 CAST(GETDATE() AS DATE) AS TestRunDate,
-		'ID Count' AS TestName,
-		COUNT(DISTINCT ID) AS ActualResult,
-		3850 AS ExpectedResult,
-		(COUNT(DISTINCT ID) - 3850) AS Deviation,
+		'Count of ProductID' AS TestName,
+		COUNT(DISTINCT productId) AS ActualResult,
+		3800 AS ExpectedResult,
+		(COUNT(DISTINCT productId) - 3800) AS Deviation,
 		CAST(GETDATE() AS DATE) AS CreatedOn,
-		'[CapstoneDB].[dbo].[BI_Health_BI_BDA_UniqueProducts]' AS CreatedBy,
+		'[CapstoneDB].[dbo].[BI_Health_CardCount]' AS CreatedBy,
 		NULL AS ModifiedOn,
 		NULL AS ModifiedBy
 	FROM 
-		BI_Feed.dbo.BI_BDA_UniqueProducts with (nolock); -- choose table from BI_feed
+		BI_Feed.dbo.CardCounts with (nolock); --choose table from BI_feed
 
-	--Upload data into CapstoneDB.dbo.BI_Health
+	--Upload data into CapstoneDB.dbo.TnTech_TestResults
 	INSERT INTO 
-		CapstoneDB.dbo.BI_HealthResults(
+		CapstoneDB.dbo.TnTech_TestResults(
 			TableName,
 			TestRunDate, 
 			TestName,
@@ -87,9 +87,9 @@ BEGIN
 		ModifiedOn,
 		ModifiedBy
 	FROM 
-		#temp_BI_BDA_UniqueProducts;
+		#temp_CardCount;
 
-	DROP TABLE #temp_BI_BDA_UniqueProducts;
+	DROP TABLE #temp_CardCount;
 
 	SET NOCOUNT OFF;
 END;
