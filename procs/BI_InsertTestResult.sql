@@ -1,5 +1,9 @@
-CREATE OR ALTER PROCEDURE [dbo].[BI_InsertTestResult]
+USE [CapstoneDB]
+GO
+
+CREATE OR ALTER PROCEDURE [dbo].[BI_InsertTestResult](
 	@Table [dbo].[TnTech_TableType] READONLY
+	)
 AS
 BEGIN
 	SET NOCOUNT ON;
@@ -16,7 +20,8 @@ BEGIN
 			T1.TestName = T2.TestName AND 
 			T1.TestRunDate = T2.TestRunDate)
 	BEGIN
-		UPDATE CapstoneDB.dbo.BI_HealthResults
+		PRINT N'1'
+		UPDATE T1
 			SET
 				T1.ActualResult = T2.ActualResult,
 				T1.ExpectedResult = T2.ExpectedResult,
@@ -38,6 +43,7 @@ BEGIN
 	ELSE
 
 	BEGIN
+		PRINT N'0'
 		INSERT INTO 
 			CapstoneDB.dbo.TnTech_TestResults(
 				TableName,
@@ -63,7 +69,8 @@ BEGIN
 			ModifiedBy
 		FROM
 			@Table
-END
+	END
 
 	SET NOCOUNT OFF;
-END;
+END
+GO
