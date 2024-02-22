@@ -23,13 +23,12 @@ BEGIN
 		PRINT N'1'
 		UPDATE T1
 			SET
+				T1.TestRunDate = GETDATE(),
 				T1.ActualResult = T2.ActualResult,
 				T1.ExpectedResult = T2.ExpectedResult,
 				T1.Deviation = T2.Deviation,
-				T1.CreatedOn = T2.CreatedOn,
-				T1.CreatedBy = T2.CreatedBy,
-				T1.ModifiedOn = T2.ModifiedOn,
-				T1.ModifiedBy = T2.ModifiedBy
+				T1.ModifiedOn = GETDATE(),
+				T1.ModifiedBy = T1.TestName
 			FROM
 				[CapstoneDB].[dbo].[BI_HealthResults] AS T1
 			INNER JOIN

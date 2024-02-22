@@ -34,10 +34,9 @@ EXEC [dbo].[TnTech_CountRecords] @TableName = '[BI_Feed].[dbo].[Toyota_Distribut
 								 @Expected = '13000';
 
 
-SELECT * FROM [dbo].[BI_HealthResults];
+
 DECLARE @test AS [dbo].[TnTech_TableType];
 INSERT INTO @test
 SELECT TOP(1) * FROM [dbo].[BI_HealthResults] ORDER BY TestRunDate ASC;
-SELECT * FROM @test;
+
 EXEC [dbo].[BI_InsertTestResult] @test;
-SELECT * FROM [dbo].[BI_HealthResults];
