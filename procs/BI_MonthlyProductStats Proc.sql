@@ -39,7 +39,7 @@ BEGIN
 		 '[CapstoneDB].[dbo].[BI_Health_BI_MonthlyProductStats]', -- CreatedBy
 		 Cast(GETDATE() AS DATE), -- TestRunDate
 		'BI_MonthlyProductStats',--name of table
-		'Integrity Check',-- name of test
+		'ProductId Count',-- name of test
 		count(distinct ProductId),--actual result
 		 2000 -- expected result 
 	FROM 
