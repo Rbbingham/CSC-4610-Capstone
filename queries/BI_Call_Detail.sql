@@ -1,3 +1,38 @@
+-- BI_Call_Detail Test (final updated query)
+USE BI_Feed
+SELECT 
+	connectTime, day_of_week, ExpectedResult, ActualResult,
+	CASE
+		WHEN ActualResult <= ExpectedResult THEN ExpectedResult - ActualResult
+		WHEN ActualResult > ExpectedResult THEN ActualResult - ExpectedResult
+	END as Variance
+FROM (
+	SELECT -- For each day, calculate count of calls and compare against expected data
+		CAST(connectTime AS DATE) AS connectTime,
+		DATEPART(WEEKDAY, connectTime) as day_of_week,
+		CASE
+			WHEN DATEPART(WEEKDAY, connectTime) = 1 THEN 4400
+			WHEN DATEPART(WEEKDAY, connectTime) = 2 THEN 5243
+			WHEN DATEPART(WEEKDAY, connectTime) = 3 THEN 5243
+			WHEN DATEPART(WEEKDAY, connectTime) = 4 THEN 5243
+			WHEN DATEPART(WEEKDAY, connectTime) = 5 THEN 5243
+			WHEN DATEPART(WEEKDAY, connectTime) = 6 THEN 8353
+			WHEN DATEPART(WEEKDAY, connectTime) = 7 THEN 4400
+			ELSE 686602
+		END as ExpectedResult,
+		COUNT(distinct callID) AS ActualResult
+	FROM dbo.BI_Call_Detail WITH (nolock)
+	GROUP BY CAST(connectTime AS DATE), DATEPART(WEEKDAY, connectTime)
+) as Subquery
+GROUP BY connectTime, day_of_week, ExpectedResult, ActualResult
+ORDER BY connectTime DESC;
+
+
+
+
+
+
+
 -- BI_Call_Detail Test
 USE BI_Feed
 
@@ -45,36 +80,6 @@ GROUP BY
 ORDER BY
 	day_of_week;
 
-
-
--- BI_Call_Detail Test
-USE BI_Feed
-SELECT 
-	connectTime, day_of_week, ExpectedResult, ActualResult,
-	CASE
-		WHEN ActualResult <= ExpectedResult THEN ExpectedResult - ActualResult
-		WHEN ActualResult > ExpectedResult THEN ActualResult - ExpectedResult
-	END as Variance
-FROM (
-	SELECT -- For each day, calculate count of calls and compare against expected data
-		CAST(connectTime AS DATE) AS connectTime,
-		DATEPART(WEEKDAY, connectTime) as day_of_week,
-		CASE
-			WHEN DATEPART(WEEKDAY, connectTime) = 1 THEN 4400
-			WHEN DATEPART(WEEKDAY, connectTime) = 2 THEN 5243
-			WHEN DATEPART(WEEKDAY, connectTime) = 3 THEN 5243
-			WHEN DATEPART(WEEKDAY, connectTime) = 4 THEN 5243
-			WHEN DATEPART(WEEKDAY, connectTime) = 5 THEN 5243
-			WHEN DATEPART(WEEKDAY, connectTime) = 6 THEN 8353
-			WHEN DATEPART(WEEKDAY, connectTime) = 7 THEN 4400
-			ELSE 686602
-		END as ExpectedResult,
-		COUNT(distinct callID) AS ActualResult
-	FROM dbo.BI_Call_Detail WITH (nolock)
-	GROUP BY CAST(connectTime AS DATE), DATEPART(WEEKDAY, connectTime)
-) as Subquery
-GROUP BY connectTime, day_of_week, ExpectedResult, ActualResult
-ORDER BY connectTime DESC;
 
 
 
