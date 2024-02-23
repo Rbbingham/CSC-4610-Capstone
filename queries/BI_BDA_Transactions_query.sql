@@ -3,8 +3,9 @@ USE BI_Feed
 SELECT id, createdON, tranID, adminNumber, transactionAmount
 FROM BI_BDA_Transactions;
 
-USE BI_Feed
 
+-- Finds averages of same day of each month
+USE BI_Feed
 
 SELECT DATEPART(day, transactionDate) as DayofMonth, AVG(transactionAmount) as avgamount
 FROM
