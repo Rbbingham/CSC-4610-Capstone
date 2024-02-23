@@ -11,18 +11,18 @@
 USE [CapstoneDB]
 GO
 
-CREATE OR ALTER PROCEDURE [dbo].[BI_Health_CardCount]
+CREATE OR ALTER PROCEDURE [dbo].[BI_Health_CardCounts]
 AS 
 BEGIN
 	SET NOCOUNT ON;
 
-	IF OBJECT_ID('tempdb.dbo.#temp_CardCount') IS NOT NULL
+	IF OBJECT_ID('tempdb.dbo.#temp_CardCounts') IS NOT NULL
 	BEGIN
-		DROP TABLE #temp_CardCount
+		DROP TABLE #temp_CardCounts
 	END;
 
 	-- Create temp table 
-	CREATE TABLE #temp_CardCount(
+	CREATE TABLE #temp_CardCounts(
 		[TableName] varchar(256) NOT NULL,
 		[TestRunDate] date NOT NULL,
 		[TestName] varchar(256) NOT NULL,
@@ -37,7 +37,7 @@ BEGIN
 
 	-- run normal query into temp table
 	INSERT INTO 
-		#temp_CardCount(
+		#temp_CardCounts(
 			TableName,
 			TestRunDate, 
 			TestName,
@@ -56,7 +56,7 @@ BEGIN
 		3800 AS ExpectedResult,
 		(COUNT(DISTINCT productId) - 3800) AS Deviation,
 		CAST(GETDATE() AS DATE) AS CreatedOn,
-		'[CapstoneDB].[dbo].[BI_Health_CardCount]' AS CreatedBy,
+		'[CapstoneDB].[dbo].[BI_Health_CardCounts]' AS CreatedBy,
 		NULL AS ModifiedOn,
 		NULL AS ModifiedBy
 	FROM 
@@ -87,9 +87,9 @@ BEGIN
 		ModifiedOn,
 		ModifiedBy
 	FROM 
-		#temp_CardCount;
+		#temp_CardCounts;
 
-	DROP TABLE #temp_CardCount;
+	DROP TABLE #temp_CardCounts;
 
 	SET NOCOUNT OFF;
 END;
