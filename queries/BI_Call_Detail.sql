@@ -39,7 +39,11 @@ SELECT
 	DetailInfo.timespan,
 	day_of_week,
 	AverageResult as ExpectedResult,
-	ActualResult
+	ActualResult,
+	CASE
+		WHEN ActualResult <= AverageResult THEN AverageResult - ActualResult
+		WHEN ActualResult > AverageResult THEN ActualResult - AverageResult
+	END as Variance
 FROM WeeklyAverages
 FULL OUTER JOIN DetailInfo ON WeeklyAverages.timespan = DetailInfo.timespan
 GROUP BY connectTime, DetailInfo.timespan, day_of_week, AverageResult, ActualResult
