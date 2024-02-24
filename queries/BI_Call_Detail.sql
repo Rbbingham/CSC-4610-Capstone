@@ -11,7 +11,7 @@ FROM (
 		CAST(connectTime AS DATE) AS connectTime,
 		DATEPART(WEEKDAY, connectTime) as day_of_week,
 		CASE
-			WHEN DATEPART(WEEKDAY, connectTime) IN (1,7) THEN 3801
+			WHEN DATEPART(WEEKDAY, connectTime) IN (1,7) THEN 3798
 			WHEN DATEPART(WEEKDAY, connectTime) IN (2,3,4,5) THEN 4712
 			WHEN DATEPART(WEEKDAY, connectTime) = 6 THEN 6580
 			ELSE 686602
@@ -29,22 +29,27 @@ ORDER BY connectTime DESC;
 USE BI_Feed
 
 SELECT
-	day_of_week,
+	timespan,
 	AVG(ActualResult) as AverageResult
 FROM (
 	SELECT -- For each day, calculate count of calls and compare against expected data
 		CAST(connectTime AS DATE) AS connectTime,
 		DATEPART(WEEKDAY, connectTime) AS day_of_week,
+		CASE
+			WHEN DATEPART(WEEKDAY, connectTime) IN (1,7) THEN 'Sat-Sun'
+			WHEN DATEPART(WEEKDAY, connectTime) IN (2,3,4,5) THEN 'Mon-Thu'
+			WHEN DATEPART(WEEKDAY, connectTime) = 6 THEN 'Fri'
+			ELSE 'NULL'
+		END as timespan,
 		COUNT(distinct callID) AS ActualResult
 	FROM dbo.BI_Call_Detail WITH (nolock)
 	WHERE DATEPART(YEAR, connectTime) >= 2023
 	GROUP BY DATEPART(WEEKDAY, connectTime), CAST(connectTime AS DATE)
 ) AS subquery
 GROUP BY
-	day_of_week
+	timespan
 ORDER BY
-	day_of_week;
-
+	timespan;
 
 
 -- BI_Call_Detail Test (original approach)
