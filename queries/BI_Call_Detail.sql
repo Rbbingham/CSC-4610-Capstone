@@ -14,7 +14,7 @@ WITH WeeklyAverages AS (
 				ELSE 'NULL'
 			END as timespan,
 			COUNT(distinct callID) AS ActualResult
-		FROM dbo.BI_Call_Detail WITH (nolock)
+		FROM BI_Feed.dbo.BI_Call_Detail WITH (nolock)
 		WHERE connectTime >= DATEADD(day, -365, GETDATE())
 		GROUP BY DATEPART(WEEKDAY, connectTime), CAST(connectTime AS DATE)
 	) AS subquery
@@ -31,7 +31,7 @@ DetailInfo AS (
 			WHEN DATEPART(WEEKDAY, connectTime) = 6 THEN 'Fri'
 			ELSE 'NULL'
 		END as timespan
-	FROM dbo.BI_Call_Detail WITH (nolock)
+	FROM BI_Feed.dbo.BI_Call_Detail WITH (nolock)
 	GROUP BY DATEPART(WEEKDAY, connectTime), CAST(connectTime AS DATE)
 )
 SELECT 
@@ -46,8 +46,13 @@ SELECT
 	END as Variance
 FROM WeeklyAverages
 FULL OUTER JOIN DetailInfo ON WeeklyAverages.timespan = DetailInfo.timespan
+WHERE connectTime = DATEADD(day, -1, CAST(GETDATE() AS DATE))
 GROUP BY connectTime, DetailInfo.timespan, day_of_week, AverageResult, ActualResult
 ORDER BY connectTime DESC;
+
+
+
+
 
 
 -- BI_Call_Detail Test (hardcoded query)
