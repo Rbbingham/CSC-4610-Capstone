@@ -11,9 +11,9 @@ FROM (
 		CAST(connectTime AS DATE) AS connectTime,
 		DATEPART(WEEKDAY, connectTime) as day_of_week,
 		CASE
-			WHEN DATEPART(WEEKDAY, connectTime) IN (1,7) THEN 3798
-			WHEN DATEPART(WEEKDAY, connectTime) IN (2,3,4,5) THEN 4712
-			WHEN DATEPART(WEEKDAY, connectTime) = 6 THEN 6580
+			WHEN DATEPART(WEEKDAY, connectTime) IN (1,7) THEN 3797
+			WHEN DATEPART(WEEKDAY, connectTime) IN (2,3,4,5) THEN 4716
+			WHEN DATEPART(WEEKDAY, connectTime) = 6 THEN 6647
 			ELSE 686602
 		END as ExpectedResult,
 		COUNT(distinct callID) AS ActualResult
@@ -43,7 +43,7 @@ FROM (
 		END as timespan,
 		COUNT(distinct callID) AS ActualResult
 	FROM dbo.BI_Call_Detail WITH (nolock)
-	WHERE DATEPART(YEAR, connectTime) >= 2023
+	WHERE connectTime >= DATEADD(day, -365, GETDATE())
 	GROUP BY DATEPART(WEEKDAY, connectTime), CAST(connectTime AS DATE)
 ) AS subquery
 GROUP BY
