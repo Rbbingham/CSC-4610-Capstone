@@ -13,18 +13,18 @@
 Use [CapstoneDB]
 GO
 
-CREATE OR ALTER PROCEDURE [dbo].[BI_Health_] --name of procedure
+CREATE OR ALTER PROCEDURE [dbo].[BI_Health_BI_Call_Detail] --name of procedure
 AS 
 BEGIN
 	SET NOCOUNT ON;
 
-	IF OBJECT_ID('tempdb.dbo.TEMP_TABLE_NAME') IS NOT NULL
+	IF OBJECT_ID('tempdb.dbo.temp_BI_Call_Detail') IS NOT NULL
 	BEGIN
-		DROP TABLE -- temp table 
+		DROP TABLE #temp_BI_Call_Detail -- temp table
 	END;
 
 	--Create temp table 
-	CREATE TABLE #temp_(
+	CREATE TABLE #temp_BI_Call_Detail(
 		[TableName] varchar(256) NOT NULL,
 		[TestRunDate] date NOT NULL,
 		[TestName] varchar(256) NOT NULL,
@@ -39,7 +39,7 @@ BEGIN
 
 	-- run normal query into temp table
 	INSERT INTO 
-		#temp_( --temp table name
+		#temp_BI_Call_Detail( --temp table name
 			TableName,
 			TestRunDate, 
 			TestName,
@@ -51,9 +51,9 @@ BEGIN
 			ModifiedOn,
 			ModifiedBy)
 	SELECT
-		'TABLENAME' AS TableName,
+		'BI_Call_Detail' AS TableName,
 		 CAST(GETDATE() AS DATE) AS TestRunDate,
-		'TESTNAME' AS TestName,
+		'Expected Call Count' AS TestName,
 		COUNT(DISTINCT </*INSERT COLUMN*/>) AS ActualResult,
 		</*INSERT DEVIATION*/> AS ExpectedResult,
 		(COUNT(DISTINCT </*INSERT COLUMN*/>) - </*INSERT DEVIATION*/>) AS Deviation,
@@ -62,7 +62,10 @@ BEGIN
 		NULL AS ModifiedOn,
 		NULL AS ModifiedBy
 	FROM 
-		BI_Feed.dbo. with (nolock); -- choose table from BI_feed
+		BI_Feed.dbo. with (nolock); -- choose table from 
+
+
+
 
 	--Upload data into CapstoneDB.dbo.BI_HealthResults
 	INSERT INTO 
@@ -89,9 +92,9 @@ BEGIN
 		ModifiedOn,
 		ModifiedBy
 	FROM 
-		</*INSERT TEMP TABLE NAME*/>;--temp table 
+		#temp_BI_Call_Detail; --temp table 
 
-	DROP TABLE </*INSERT TEMP TABLE NAME*/>;
+	DROP TABLE #temp_BI_Call_Detail;
 
 	SET NOCOUNT OFF;
 END
