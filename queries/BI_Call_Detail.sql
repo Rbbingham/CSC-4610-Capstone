@@ -348,3 +348,32 @@ FROM (
 --------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------
+
+SELECT 
+    connectTime,
+    timespan AS timespan,
+    day_of_week,
+    AVG(ActualResult) as ExpectedResult,
+    SUM(ActualResult) as ActualResult,
+    CASE
+        WHEN SUM(ActualResult) <= AVG(ActualResult) THEN AVG(ActualResult) - SUM(ActualResult)
+        WHEN SUM(ActualResult) > AVG(ActualResult) THEN SUM(ActualResult) - AVG(ActualResult)
+    END as Deviation
+FROM (
+    SELECT 
+        CAST(connectTime AS DATE) AS connectTime,
+        DATEPART(WEEKDAY, connectTime) AS day_of_week,
+        CASE
+            WHEN DATEPART(WEEKDAY, connectTime) IN (1,7) THEN 'Sat-Sun'
+            WHEN DATEPART(WEEKDAY, connectTime) IN (2,3,4,5) THEN 'Mon-Thu'
+            WHEN DATEPART(WEEKDAY, connectTime) = 6 THEN 'Fri'
+            ELSE 'NULL'
+        END as timespan,
+        COUNT(distinct callID) AS ActualResult
+    FROM BI_Feed.dbo.BI_Call_Detail WITH (nolock)
+    WHERE connectTime >= DATEADD(day, -365, GETDATE())
+    GROUP BY DATEPART(WEEKDAY, connectTime), CAST(connectTime AS DATE)
+) AS subquery
+WHERE connectTime = DATEADD(day, -1, CAST(GETDATE() AS DATE))
+GROUP BY connectTime, timespan, day_of_week
+ORDER BY connectTime DESC;
