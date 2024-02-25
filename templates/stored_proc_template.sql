@@ -1,12 +1,10 @@
 /******************************************************************************
 	
-	CREATOR: Harrison Peloquin
+	CREATOR:
 
-	CREATED: February 24, 2024
+	CREATED:
 
-	PURPOSE: For each day (using ConnectTimeStamp), calculate the count of calls
-	(use count distinct CallID) and compare against and expected value. About 
-	4k-8k calls a day
+	PURPOSE:
 
 ******************************************************************************/
 
