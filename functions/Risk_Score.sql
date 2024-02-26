@@ -31,6 +31,3 @@ BEGIN
 	RETURN @ret;
 END;
 GO
-
-SELECT [dbo].[CalculateRiskScore](0, 1);
-SELECT * FROM [dbo].[BI_HealthResults];
