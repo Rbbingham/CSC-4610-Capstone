@@ -1,28 +1,28 @@
 /******************************************************************************
 	
-	CREATOR:
+	CREATOR: Carlos Escudero
 
-	CREATED:
+	CREATED: 2/26/24
 
-	PURPOSE:
+	PURPOSE: To count the number of Admin Number for a given day, ensuring that is 21000
 
 ******************************************************************************/
 
 Use [CapstoneDB]
 GO
 
-CREATE OR ALTER PROCEDURE [dbo].[BI_Health_] --name of procedure
+CREATE OR ALTER PROCEDURE [dbo].[BI_Health_Toyota_Inventory] --name of procedure
 AS 
 BEGIN
 	SET NOCOUNT ON;
 
-	IF OBJECT_ID('tempdb.dbo.TEMP_TABLE_NAME') IS NOT NULL
+	IF OBJECT_ID('tempdb.dbo.temp_Toyota_Inventory') IS NOT NULL
 	BEGIN
-		DROP TABLE -- temp table 
+		DROP TABLE #temp_Toyota_Inventory-- temp table 
 	END;
 
 	--Create temp table 
-	CREATE TABLE #temp_(
+	CREATE TABLE #temp_Toyota_Inventory(
 		[TableName] varchar(256) NOT NULL,
 		[TestRunDate] date NOT NULL,
 		[TestName] varchar(256) NOT NULL,
@@ -37,7 +37,7 @@ BEGIN
 
 	-- run normal query into temp table
 	INSERT INTO 
-		#temp_( --temp table name
+		#temp_Toyota_Inventory( --temp table name
 			TableName,
 			TestRunDate, 
 			TestName,
@@ -49,18 +49,18 @@ BEGIN
 			ModifiedOn,
 			ModifiedBy)
 	SELECT
-		'TABLENAME' AS TableName,
+		'Toyota_Inventory' AS TableName,
 		 CAST(GETDATE() AS DATE) AS TestRunDate,
-		'TESTNAME' AS TestName,
-		COUNT(DISTINCT </*INSERT COLUMN*/>) AS ActualResult,
-		</*INSERT DEVIATION*/> AS ExpectedResult,
-		(COUNT(DISTINCT </*INSERT COLUMN*/>) - </*INSERT DEVIATION*/>) AS Deviation,
+		'Admin Number Count' AS TestName,
+		COUNT(DISTINCT AdminNumber) AS ActualResult,
+		21000 AS ExpectedResult,
+		(COUNT(DISTINCT AdminNumber) - 21000) AS Deviation,
 		CAST(GETDATE() AS DATE) AS CreatedOn,
-		'[CapstoneDB].[dbo].[BI_Health_PROCEDURE_NAME]' AS CreatedBy,
+		'[CapstoneDB].[dbo].[BI_Health_Toyota_Inventory]' AS CreatedBy,
 		NULL AS ModifiedOn,
 		NULL AS ModifiedBy
 	FROM 
-		BI_Feed.dbo. with (nolock); -- choose table from BI_feed
+		BI_Feed.dbo.Toyota_Inventory with (nolock); -- choose table from BI_feed
 
 	--Upload data into CapstoneDB.dbo.BI_HealthResults
 	INSERT INTO 
@@ -87,9 +87,9 @@ BEGIN
 		ModifiedOn,
 		ModifiedBy
 	FROM 
-		</*INSERT TEMP TABLE NAME*/>;--temp table 
+		#temp_Toyota_Inventory; --temp table 
 
-	DROP TABLE </*INSERT TEMP TABLE NAME*/>;
+	DROP TABLE #temp_Toyota_Inventory;
 
 	SET NOCOUNT OFF;
 END
