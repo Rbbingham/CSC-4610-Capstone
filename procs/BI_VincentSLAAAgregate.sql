@@ -68,7 +68,7 @@ BEGIN
 
 	--Upload data into CapstoneDB.dbo.TnTech_TestResults
 	INSERT INTO 
-		CapstoneDB.dbo.TnTech_TestResults(
+		CapstoneDB.dbo.BI_HealthResults(
 			TableName,
 			TestRunDate, 
 			TestName,
