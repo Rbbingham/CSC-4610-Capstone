@@ -19,8 +19,18 @@ RETURNS int
 AS
 BEGIN
 	DECLARE @ret int;
-	
+
+	IF @ExpectedResult = 0 AND @ActualResult > 0
+		SET @ret = 10;
+	ELSE
+		SET @ret = ABS((@ActualResult / @ExpectedResult) - 1) * 10;
+
+	IF @ret > 10
+		SET @ret = 10;
 
 	RETURN @ret;
 END;
 GO
+
+SELECT [dbo].[CalculateRiskScore](0, 1);
+SELECT * FROM [dbo].[BI_HealthResults];
