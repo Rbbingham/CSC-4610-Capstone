@@ -1,12 +1,17 @@
--- =============================================
--- Author: Carlos Escudero   
--- Create Date: 2/15/24
--- Description: Counting ID of MerchantGroupsMIDs
--- =============================================
+/******************************************************************************
+	
+	CREATOR:	Carlos Escudero
+
+	CREATED:	2/15/2024
+
+	PURPOSE:	Counting ID of MerchantGroupsMIDs
+
+******************************************************************************/
+
 Use CapstoneDB
 GO
 
-CREATE OR ALTER Procedure[dbo].[BI_Health_BI_MerchantGroupMIDs] --name of procedure
+CREATE OR ALTER Procedure[dbo].[BI_Health_BI_MerchantGroupMIDs]
 AS 
 
 BEGIN
