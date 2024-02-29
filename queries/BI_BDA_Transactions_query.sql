@@ -26,3 +26,19 @@ FROM
 ) AS subquery
 GROUP BY timespan
 ORDER BY timespan
+------------------------------------------------------------------
+------------------------------------------------------------------
+SELECT timespan, AVG(transactionAmount) as avgamount
+FROM
+(
+	SELECT id, CAST(createdON as DATE) as transactionDate, tranID, adminNumber, transactionAmount,
+	CASE
+			WHEN DATEPART(WEEKDAY, createdOn) in (1,2) THEN 'Sun-Mon'
+			WHEN DATEPART(WEEKDAY, createdOn) in (3,4,5,6,7) THEN 'Tues-Sat'
+			ELSE 'NULL'
+	END as timespan
+	FROM BI_BDA_Transactions
+	WHERE createdOn >= DATEADD(day, -365, GETDATE())
+) AS subquery
+GROUP BY timespan
+ORDER BY timespan
