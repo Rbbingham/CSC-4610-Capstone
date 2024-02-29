@@ -50,7 +50,7 @@ BEGIN
 		MONTH([Month]) = MONTH(GETDATE()) AND
 		DAY([Month]) = '1';
 
-	-- Upload data into CapstoneDB.dbo.TnTech_TestResults
+	-- Upload data into CapstoneDB.dbo.BI_HealthResults
 	EXEC [dbo].[BI_InsertTestResult] @Table = @temp_BI_VincentSLAAAgregate;
 
 	SET NOCOUNT OFF;

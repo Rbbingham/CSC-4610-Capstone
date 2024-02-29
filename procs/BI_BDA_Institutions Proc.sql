@@ -16,28 +16,12 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
-	IF OBJECT_ID('tempdb.dbo.#temp_BI_BDA_Institutions') IS NOT NULL 
-	BEGIN
-		DROP TABLE #temp_BI_BDA_Institutions
-	END;
-
 	--Create temp table 
-	CREATE TABLE #temp_BI_BDA_Institutions(
-		[TableName] varchar(256) NOT NULL,
-		[TestRunDate] date NOT NULL,
-		[TestName] varchar(256) NOT NULL,
-		[ActualResult] bigint NOT NULL,
-		[ExpectedResult] bigint NOT NULL,
-		[Deviation] bigint NOT NULL,
-		[CreatedOn] date NOT NULL,
-		[CreatedBy] varchar(256) NOT NULL,
-		[ModifiedOn] date NULL,
-		[ModifiedBy] varchar(256) NULL
-	);
+	DECLARE @temp_BI_BDA_Institutions AS [dbo].[TnTech_TableType];
 
 	-- run normal query into temp table
 	INSERT INTO 
-		#temp_BI_BDA_Institutions (
+		@temp_BI_BDA_Institutions (
 			TableName,
 			TestRunDate, 
 			TestName,
@@ -62,34 +46,8 @@ BEGIN
 	FROM 
 		BI_Feed.dbo.BI_BDA_Institutions with (nolock); --choose table from BI_feed
 
-	--Upload data into CapstoneDB.dbo.BI_HealthResults
-	INSERT INTO 
-		CapstoneDB.dbo.BI_HealthResults(
-			TableName,
-			TestRunDate, 
-			TestName,
-			ActualResult,
-			ExpectedResult,
-			Deviation,
-			CreatedOn,
-			CreatedBy,
-			ModifiedOn,
-			ModifiedBy)
-	SELECT
-		TableName,
-		TestRunDate, 
-		TestName,
-		ActualResult,
-		ExpectedResult,
-		Deviation,
-		CreatedOn,
-		CreatedBy,
-		ModifiedOn,
-		ModifiedBy
-	FROM 
-		#temp_BI_BDA_Institutions;
-
-	DROP TABLE #temp_BI_BDA_Institutions;
+	-- Upload data into CapstoneDB.dbo.BI_HealthResults
+	EXEC [dbo].[BI_InsertTestResult] @Table = @temp_BI_BDA_Institutions;
 
 	SET NOCOUNT OFF;
 END;
