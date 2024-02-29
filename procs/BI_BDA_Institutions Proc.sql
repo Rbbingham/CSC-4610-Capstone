@@ -16,12 +16,12 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
-	--Create temp table 
+	-- create temp table 
 	DECLARE @temp_BI_BDA_Institutions AS [dbo].[TnTech_TableType];
 
 	-- run normal query into temp table
 	INSERT INTO 
-		@temp_BI_BDA_Institutions (
+		@temp_BI_BDA_Institutions(
 			TableName,
 			TestRunDate, 
 			TestName,
@@ -46,7 +46,7 @@ BEGIN
 	FROM 
 		BI_Feed.dbo.BI_BDA_Institutions with (nolock); --choose table from BI_feed
 
-	-- Upload data into CapstoneDB.dbo.BI_HealthResults
+	-- upload data into CapstoneDB.dbo.BI_HealthResults
 	EXEC [dbo].[BI_InsertTestResult] @Table = @temp_BI_BDA_Institutions;
 
 	SET NOCOUNT OFF;
