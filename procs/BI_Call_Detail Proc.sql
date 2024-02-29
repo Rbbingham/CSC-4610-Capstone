@@ -19,7 +19,7 @@ BEGIN
     SET NOCOUNT ON;
 
     -- create temp table 
-	DECLARE @temp_BI_VincentSLAAAgregate AS [dbo].[TnTech_TableType];
+	DECLARE @temp_BI_Call_Detail AS [dbo].[TnTech_TableType];
 
     -- CTE
     WITH WeeklyAverages AS (
@@ -59,7 +59,7 @@ BEGIN
     )
 
     -- insert into temp table from the CTE and subsequent SELECT statement
-    INSERT INTO @temp_BI_VincentSLAAAgregate(
+    INSERT INTO @temp_BI_Call_Detail(
         TableName,
         TestRunDate, 
         TestName,
@@ -92,7 +92,7 @@ BEGIN
     ORDER BY connectTime DESC;
 
 	-- upload data into CapstoneDB.dbo.BI_HealthResults
-	EXEC [dbo].[BI_InsertTestResult] @Table = @temp_BI_VincentSLAAAgregate; 
+	EXEC [dbo].[BI_InsertTestResult] @Table = @temp_BI_Call_Detail; 
 
 	SET NOCOUNT OFF;
 END;
