@@ -4,7 +4,7 @@
 
 	CREATED:	02/15/2024
 
-	PURPOSE:	
+	PURPOSE:	Ensures that one record is insert at the 1st of the month.
 
 ******************************************************************************/
 
@@ -50,7 +50,7 @@ BEGIN
 			ModifiedBy)
 	SELECT
 		'BI_VincentSLAAAgregate' AS TableName,
-		 CAST(GETDATE() AS DATE) AS TestRunDate,
+		CAST(GETDATE() AS DATE) AS TestRunDate,
 		'Get Record per Month' AS TestName,
 		COUNT(DISTINCT [Month]) AS ActualResult,
 		1 AS ExpectedResult,
@@ -66,7 +66,7 @@ BEGIN
 		MONTH([Month]) = MONTH(GETDATE()) AND
 		DAY([Month]) = '1';
 
-	--Upload data into CapstoneDB.dbo.TnTech_TestResults
+	-- Upload data into CapstoneDB.dbo.TnTech_TestResults
 	INSERT INTO 
 		CapstoneDB.dbo.BI_HealthResults(
 			TableName,
@@ -96,4 +96,5 @@ BEGIN
 	DROP TABLE #temp_BI_VincentSLAAAgregate;
 
 	SET NOCOUNT OFF;
-END
+END;
+GO
