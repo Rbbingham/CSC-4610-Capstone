@@ -12,7 +12,7 @@ BEGIN
 		SELECT 
 			* 
 		FROM 
-			CapstoneDB.dbo.BI_HealthResults AS T1
+			[CapstoneDB].[dbo].[BI_HealthResults] AS T1
 		INNER JOIN
 			@Table AS T2
 		ON 
@@ -44,7 +44,7 @@ BEGIN
 	BEGIN
 		PRINT N'0'
 		INSERT INTO 
-			CapstoneDB.dbo.TnTech_TestResults(
+			[CapstoneDB].[dbo].[BI_HealthResults](
 				TableName,
 				TestRunDate, 
 				TestName,
