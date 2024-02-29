@@ -16,28 +16,12 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
-	IF OBJECT_ID('tempdb.dbo.#temp_BI_VincentSLAAAgregate') IS NOT NULL
-	BEGIN
-		DROP TABLE #temp_BI_VincentSLAAAgregate
-	END;
-
-	--Create temp table 
-	CREATE TABLE #temp_BI_VincentSLAAAgregate(
-		[TableName] varchar(256) NOT NULL,
-		[TestRunDate] date NOT NULL,
-		[TestName] varchar(256) NOT NULL,
-		[ActualResult] bigint NOT NULL,
-		[ExpectedResult] bigint NOT NULL,
-		[Deviation] bigint NOT NULL,
-		[CreatedOn] date NOT NULL,
-		[CreatedBy] varchar(256) NOT NULL,
-		[ModifiedOn] date NULL,
-		[ModifiedBy] varchar(256) NULL
-	);
+	-- Create temp table
+	DECLARE @temp_BI_VincentSLAAAgregate AS [dbo].[TnTech_TableType];
 
 	-- run normal query into temp table
 	INSERT INTO 
-		#temp_BI_VincentSLAAAgregate( --temp table name
+		@temp_BI_VincentSLAAAgregate( --temp table name
 			TableName,
 			TestRunDate, 
 			TestName,
@@ -67,33 +51,7 @@ BEGIN
 		DAY([Month]) = '1';
 
 	-- Upload data into CapstoneDB.dbo.TnTech_TestResults
-	INSERT INTO 
-		CapstoneDB.dbo.BI_HealthResults(
-			TableName,
-			TestRunDate, 
-			TestName,
-			ActualResult,
-			ExpectedResult,
-			Deviation,
-			CreatedOn,
-			CreatedBy,
-			ModifiedOn,
-			ModifiedBy)
-	SELECT
-		TableName,
-		TestRunDate, 
-		TestName,
-		ActualResult,
-		ExpectedResult,
-		Deviation,
-		CreatedOn,
-		CreatedBy,
-		ModifiedOn,
-		ModifiedBy
-	FROM 
-		#temp_BI_VincentSLAAAgregate;
-
-	DROP TABLE #temp_BI_VincentSLAAAgregate;
+	EXEC [dbo].[BI_InsertTestResult] @Table = @temp_BI_VincentSLAAAgregate;
 
 	SET NOCOUNT OFF;
 END;
