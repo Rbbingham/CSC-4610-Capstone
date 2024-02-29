@@ -16,12 +16,12 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
-	-- Create temp table
+	-- create temp table
 	DECLARE @temp_BI_VincentSLAAAgregate AS [dbo].[TnTech_TableType];
 
 	-- run normal query into temp table
 	INSERT INTO 
-		@temp_BI_VincentSLAAAgregate( --temp table name
+		@temp_BI_VincentSLAAAgregate(
 			TableName,
 			TestRunDate, 
 			TestName,
@@ -50,7 +50,7 @@ BEGIN
 		MONTH([Month]) = MONTH(GETDATE()) AND
 		DAY([Month]) = '1';
 
-	-- Upload data into CapstoneDB.dbo.TnTech_TestResults
+	-- upload data into CapstoneDB.dbo.BI_HealthResults
 	EXEC [dbo].[BI_InsertTestResult] @Table = @temp_BI_VincentSLAAAgregate;
 
 	SET NOCOUNT OFF;
