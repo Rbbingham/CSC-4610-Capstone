@@ -13,23 +13,11 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
-	IF OBJECT_ID('tempdb.dbo.BI_TPAS_AccountHolders') is not null 
-	begin 
-		Drop Table  #temp_BI_TPAS_AccountHolders--temp table 
-	end;
+	DECLARE @temp_BI_TPAS_AccountHolders AS [dbo].[TnTech_TableType];
 
-	--Create temp table 
-	CREATE TABLE #temp_BI_TPAS_AccountHolders(
-		[CreatedBy][varchar](256) NOT NULL,
-		[TestRunDate][date]NOT NULL,
-		[TableName][varchar](256) NOT NULL,
-		[TestName][varchar](256) NOT NULL,
-		[ActualResult] [bigint] NOT NULL,
-		[ExpectedResult] [bigint] NULL,
-	)
 	-- run normal query into temp table
 	INSERT INTO 
-		#temp_BI_TPAS_AccountHolders --temp table name
+		@temp_BI_TPAS_AccountHolders --temp table name
 		(CreatedBy,
 		TestRunDate, 
 		TableName,
@@ -50,7 +38,7 @@ BEGIN
 	ALTER TABLE #temp_BI_TPAS_AccountHolders ADD Deviation INT;
 
 	--Updates the Deviation column with Actual-Expected
-	UPDATE #temp_BI_TPAS_AccountHolders
+	UPDATE @temp_BI_TPAS_AccountHolders
 	SET Deviation = ActualResult -ExpectedResult;
 
 	--Upload data into CapstoneDB.dbo.BI_HealthResults
@@ -72,10 +60,9 @@ BEGIN
 		ExpectedResult,
 		Deviation
 	FROM 
-		#temp_BI_TPAS_AccountHolders;--temp table 
+		@temp_BI_TPAS_AccountHolders;--temp table 
 
-	-- Final, drop the temporary table
-	DROP TABLE #temp_BI_TPAS_AccountHolders; -- Final, drop the temporary table
+	EXEC [dbo].[BI_InsertTestResult] @Table = @temp_BI_TPAS_AccountHolders
 
 	SET NOCOUNT OFF;
 END
