@@ -34,5 +34,3 @@ BEGIN
 	RETURN @ret;
 END;
 GO
-
-SELECT [dbo].[CalculateRiskScore](30000, 20000);
