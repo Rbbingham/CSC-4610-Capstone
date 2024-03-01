@@ -1,3 +1,6 @@
+USE [CapstoneDB]
+GO
+
 /******************************************************************************
 	
 	CREATOR:	Robert Bingham
@@ -8,9 +11,6 @@
 
 ******************************************************************************/
 
-USE [CapstoneDB]
-GO
-
 CREATE OR ALTER FUNCTION [dbo].[CalculateRiskScore] (
 	@ActualResult bigint,
 	@ExpectedResult bigint
@@ -20,10 +20,13 @@ AS
 BEGIN
 	DECLARE @ret int;
 
-	IF @ExpectedResult = 0 AND @ActualResult > 0
-		SET @ret = 10;
+	IF @ExpectedResult = 0
+		IF @ActualResult <> 0
+			SET @ret = 10;
+		ELSE
+			SET @ret = 0;
 	ELSE
-		SET @ret = ABS((@ActualResult / @ExpectedResult) - 1) * 10;
+		SET @ret = ABS((CAST(@ActualResult AS float) / CAST(@ExpectedResult AS float)) - 1) * 10;
 
 	IF @ret > 10
 		SET @ret = 10;
@@ -32,5 +35,4 @@ BEGIN
 END;
 GO
 
-SELECT [dbo].[CalculateRiskScore](0, 1);
-SELECT * FROM [dbo].[BI_HealthResults];
+SELECT [dbo].[CalculateRiskScore](30000, 20000);
