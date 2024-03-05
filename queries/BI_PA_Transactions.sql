@@ -1,8 +1,5 @@
 select *
 from BI_Feed.dbo.BI_PA_Transactions;
-
-
-
 -----------------------------------------------------------
 SELECT 
 	CAST(transactionDate as date) as TransactionDate,
@@ -11,8 +8,7 @@ SELECT
 FROM BI_Feed.dbo.BI_PA_Transactions
 GROUP BY Cast(transactionDate as date)
 ORDER BY Cast(transactionDate as date) DESC;
-
-
+------------------------------------------------------------------
 SELECT 
 	CAST(transactionDate as date) as TransactionDate,
 	COUNT(transactionReferenceId) as TransactionCount,
@@ -31,3 +27,22 @@ SELECT
 FROM BI_Feed.dbo.BI_PA_Transactions with (nolock)
 GROUP BY DATEPART(Weekday, transactionDate), CAST(transactionDate as date)
 ORDER BY Cast(transactionDate as date) DESC;
+-------------------------------------------------------------------
+
+WITH WeeklyAverages as (
+	SELECT 
+		timespan,
+		AVG(ActualResult) as AverageResults
+	FROM(
+		SELECT 
+			CAST(transactionDate AS DATE) AS TransactionDate,
+			DATEPART(WEEKDAY, transactionDate) AS day_of_week,
+			CASE
+				WHEN DATEPART(WEEKDAY, transactionDate) IN (1,7) THEN 'Sat-Sun'
+				WHEN DATEPART(WEEKDAY, transactionDate) IN (2,3,4,5) THEN 'Mon-Thu'
+				WHEN DATEPART(WEEKDAY, transactionDate) = 6 THEN 'Fri'
+				ELSE 'NULL'
+			END as timespan),
+			Count(distinct paymentAccountId)as ActualResult
+		FROM BI_Feed.dbo.BI_PA_transactions WITH (nolock)
+)
