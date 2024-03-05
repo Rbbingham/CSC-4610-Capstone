@@ -3,55 +3,14 @@ USE BI_Feed
 SELECT top 10 id, createdON, tranID, adminNumber, transactionAmount
 FROM BI_BDA_Transactions;
 
-
-
-USE BI_Feed
-
-SELECT timespan, AVG(transactionAmount) as avgamount
-FROM
-(
-	SELECT id, CAST(createdON as DATE) as transactionDate, tranID, adminNumber, transactionAmount,
-	CASE
-			WHEN DATEPART(WEEKDAY, createdOn) = 1 THEN 1
-			WHEN DATEPART(WEEKDAY, createdOn) = 2 THEN 2
-			WHEN DATEPART(WEEKDAY, createdOn) = 3 THEN 3
-			WHEN DATEPART(WEEKDAY, createdOn) = 4 THEN 4
-			WHEN DATEPART(WEEKDAY, createdOn) = 5 THEN 5
-			WHEN DATEPART(WEEKDAY, createdOn) = 6 THEN 6
-			WHEN DATEPART(WEEKDAY, createdOn) = 7 THEN 7
-			ELSE 'NULL'
-	END as timespan
-	FROM BI_BDA_Transactions
-	WHERE createdOn >= DATEADD(day, -365, GETDATE())
-) AS subquery
-GROUP BY timespan
-ORDER BY timespan
-------------------------------------------------------------------
-------------------------------------------------------------------
-SELECT timespan, AVG(transactionAmount) as avgamount
-FROM
-(
-	SELECT id, CAST(createdON as DATE) as transactionDate, tranID, adminNumber, transactionAmount,
-	CASE
-			WHEN DATEPART(WEEKDAY, createdOn) in (1,2) THEN 'Sun-Mon'
-			WHEN DATEPART(WEEKDAY, createdOn) in (3,4,5,6,7) THEN 'Tues-Sat'
-			ELSE 'NULL'
-	END as timespan
-	FROM BI_BDA_Transactions
-	WHERE createdOn >= DATEADD(day, -365, GETDATE())
-) AS subquery
-GROUP BY timespan
-ORDER BY timespan
-
 -----------------------------------------------------------------------------------------
-
 USE BI_Feed
 
 SELECT day_of_month, AVG(tranIDCount) as avgTranIDCount
 FROM
 (
 	SELECT 
-		CAST(createdOn as DATE), 
+		CAST(createdOn as DATE) as transactionDate, 
 		DATEPART(day, CAST(createdOn as DATE)) as day_of_month, 
 		COUNT(tranID) as tranIDCount
 	FROM BI_BDA_Transactions
@@ -59,4 +18,39 @@ FROM
 	GROUP BY CAST(createdON as DATE)
 ) AS subquery
 GROUP BY day_of_month
-ORDER BY day_of_month
+ORDER BY day_of_month;
+-------------------------------------------------------------------------------------------
+SELECT
+	CAST(createdOn as DATE) as transactionDate, 
+	DATEPART(day, CAST(createdOn as DATE)) as day_of_month,
+	COUNT(tranID) as tranIDCount
+FROM BI_BDA_Transactions
+GROUP BY CAST(createdOn as DATE);
+--------------------------------------------------------------------
+
+WITH AveragesByDay AS (
+	SELECT day_of_month, AVG(tranIDCount) as avgTranIDCount
+	FROM
+	(
+		SELECT 
+			CAST(createdOn as DATE) as transactionDate, 
+			DATEPART(day, CAST(createdOn as DATE)) as day_of_month, 
+			COUNT(tranID) as tranIDCount
+		FROM BI_BDA_Transactions
+		WHERE createdOn >= DATEADD(day, -365, GETDATE())
+		GROUP BY CAST(createdON as DATE)
+	) AS subquery
+	GROUP BY day_of_month
+),
+DetailInfo AS (
+	SELECT
+		CAST(createdOn as DATE) as transactionDate, 
+		DATEPART(day, CAST(createdOn as DATE)) as day_of_month,
+		COUNT(tranID) as tranIDCount
+	FROM BI_BDA_Transactions
+	GROUP BY CAST(createdOn as DATE)
+)
+SELECT
+	
+FROM AveragesByDay
+FULL OUTER JOIN DetailInfo on AveragesByDay.day_of_month = DetailInfo.day_of_month;
