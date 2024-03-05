@@ -1,6 +1,6 @@
 USE BI_Feed
 
-SELECT id, createdON, tranID, adminNumber, transactionAmount
+SELECT top 10 id, createdON, tranID, adminNumber, transactionAmount
 FROM BI_BDA_Transactions;
 
 
@@ -43,32 +43,16 @@ FROM
 GROUP BY timespan
 ORDER BY timespan
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+-----------------------------------------------------------------------------------------
 
 USE BI_Feed
 
-SELECT transactionDate, COUNT(transactionAmount) as amountCount
+SELECT DATEPART(day, transactionDate) as day_of_month, COUNT(tranID) as tranIDCount
 FROM
 (
-	SELECT id, CAST(createdON as DATE) as transactionDate, tranID, adminNumber, transactionAmount
+	SELECT CAST(createdON as DATE) as transactionDate, tranID
 	FROM BI_BDA_Transactions
 	WHERE createdOn >= DATEADD(day, -365, GETDATE())
 ) AS subquery
-GROUP BY transactionDate
-ORDER BY transactionDate
+GROUP BY DATEPART(day, transactionDate)
+ORDER BY DATEPART(day, transactionDate)
