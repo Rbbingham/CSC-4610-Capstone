@@ -4,7 +4,7 @@ SELECT id, createdON, tranID, adminNumber, transactionAmount
 FROM BI_BDA_Transactions;
 
 
--- Finds averages of same day of each month
+
 USE BI_Feed
 
 SELECT timespan, AVG(transactionAmount) as avgamount
@@ -42,3 +42,33 @@ FROM
 ) AS subquery
 GROUP BY timespan
 ORDER BY timespan
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+USE BI_Feed
+
+SELECT transactionDate, COUNT(transactionAmount) as amountCount
+FROM
+(
+	SELECT id, CAST(createdON as DATE) as transactionDate, tranID, adminNumber, transactionAmount
+	FROM BI_BDA_Transactions
+	WHERE createdOn >= DATEADD(day, -365, GETDATE())
+) AS subquery
+GROUP BY transactionDate
+ORDER BY transactionDate
