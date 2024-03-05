@@ -47,12 +47,16 @@ ORDER BY timespan
 
 USE BI_Feed
 
-SELECT DATEPART(day, transactionDate) as day_of_month, COUNT(tranID) as tranIDCount
+SELECT day_of_month, AVG(tranIDCount) as avgTranIDCount
 FROM
 (
-	SELECT CAST(createdON as DATE) as transactionDate, tranID
+	SELECT 
+		CAST(createdOn as DATE), 
+		DATEPART(day, CAST(createdOn as DATE)) as day_of_month, 
+		COUNT(tranID) as tranIDCount
 	FROM BI_BDA_Transactions
 	WHERE createdOn >= DATEADD(day, -365, GETDATE())
+	GROUP BY CAST(createdON as DATE)
 ) AS subquery
-GROUP BY DATEPART(day, transactionDate)
-ORDER BY DATEPART(day, transactionDate)
+GROUP BY day_of_month
+ORDER BY day_of_month
