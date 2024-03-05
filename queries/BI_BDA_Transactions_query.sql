@@ -37,7 +37,7 @@ WITH AveragesByDay AS (
 			DATEPART(day, CAST(createdOn as DATE)) as day_of_month, 
 			COUNT(tranID) as tranIDCount
 		FROM BI_Feed.dbo.BI_BDA_Transactions WITH (nolock)
-		WHERE createdOn >= DATEADD(day, -365, GETDATE())
+		WHERE createdOn >= DATEADD(day, -183, GETDATE())
 		GROUP BY CAST(createdON as DATE)
 	) AS subquery
 	GROUP BY day_of_month
@@ -48,6 +48,7 @@ DetailInfo AS (
 		DATEPART(day, CAST(createdOn as DATE)) as day_of_month,
 		COUNT(tranID) as ActualResult
 	FROM BI_Feed.dbo.BI_BDA_Transactions WITH (nolock)
+	WHERE createdOn >= DATEADD(day, -183, GETDATE())
 	GROUP BY CAST(createdOn as DATE)
 )
 SELECT
@@ -61,5 +62,6 @@ SELECT
 	END as Deviation
 FROM AveragesByDay
 FULL OUTER JOIN DetailInfo on AveragesByDay.day_of_month = DetailInfo.day_of_month
+WHERE transactionDate >= DATEADD(day, -183, GETDATE())
 GROUP BY transactionDate, DetailInfo.day_of_month, avgTranIDCount, ActualResult
 ORDER BY transactionDate DESC;
