@@ -16,28 +16,12 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
-	IF OBJECT_ID('tempdb.dbo.#temp_BI_BDA_UniqueProducts') IS NOT NULL 
-	BEGIN
-		DROP TABLE #temp_BI_BDA_UniqueProducts
-	END;
-
-	--Create temp table 
-	CREATE TABLE #temp_BI_BDA_UniqueProducts(
-		[TableName] varchar(256) NOT NULL,
-		[TestRunDate] date NOT NULL,
-		[TestName] varchar(256) NOT NULL,
-		[ActualResult] bigint NOT NULL,
-		[ExpectedResult] bigint NOT NULL,
-		[Deviation] bigint NOT NULL,
-		[CreatedOn] date NOT NULL,
-		[CreatedBy] varchar(256) NOT NULL,
-		[ModifiedOn] date NULL,
-		[ModifiedBy] varchar(256) NULL
-	);
+	-- create temp table 
+	DECLARE @temp_BI_BDA_UniqueProducts AS [dbo].[TnTech_TableType];
 
 	-- run normal query into temp table
 	INSERT INTO 
-		#temp_BI_BDA_UniqueProducts(
+		@temp_BI_BDA_UniqueProducts(
 			TableName,
 			TestRunDate, 
 			TestName,
@@ -62,34 +46,9 @@ BEGIN
 	FROM 
 		BI_Feed.dbo.BI_BDA_UniqueProducts with (nolock); -- choose table from BI_feed
 
-	--Upload data into CapstoneDB.dbo.BI_Health
-	INSERT INTO 
-		CapstoneDB.dbo.BI_HealthResults(
-			TableName,
-			TestRunDate, 
-			TestName,
-			ActualResult,
-			ExpectedResult,
-			Deviation,
-			CreatedOn,
-			CreatedBy,
-			ModifiedOn,
-			ModifiedBy)
-	SELECT
-		TableName,
-		TestRunDate, 
-		TestName,
-		ActualResult,
-		ExpectedResult,
-		Deviation,
-		CreatedOn,
-		CreatedBy,
-		ModifiedOn,
-		ModifiedBy
-	FROM 
-		#temp_BI_BDA_UniqueProducts;
+	-- upload data into CapstoneDB.dbo.BI_Health
+	EXEC [dbo].[BI_InsertTestResult] @Table = @temp_BI_BDA_UniqueProducts;
 
-	DROP TABLE #temp_BI_BDA_UniqueProducts;
 
 	SET NOCOUNT OFF;
 END;

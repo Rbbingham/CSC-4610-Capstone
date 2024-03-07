@@ -1,80 +1,54 @@
--- =============================================
--- Author: Carlos Escudero   
--- Create Date: 2/15/24
--- Description: Counting ID of MerchantGroupsMIDs
--- =============================================
+/******************************************************************************
+	
+	CREATOR:	Carlos Escudero
+
+	CREATED:	2/15/2024
+
+	PURPOSE:	Counting ID of MerchantGroupsMIDs
+
+******************************************************************************/
+
 Use CapstoneDB
 GO
 
-CREATE OR ALTER Procedure[dbo].[BI_Health_BI_MerchantGroupMIDs] --name of procedure
+CREATE OR ALTER Procedure[dbo].[BI_Health_BI_MerchantGroupMIDs]
 AS 
 
 BEGIN
 	SET NOCOUNT ON;
 
-	IF OBJECT_ID('tempdb.dbo.BI_MerchantGroupMIDs') is not null 
-	begin 
-		Drop Table  #temp_BI_MerchantGroupMIDs--temp table 
-	end;
+	-- create temp table 
+	DECLARE @temp_BI_MerchantGroupMIDs AS [dbo].[TnTech_TableType];
 
-	--Create temp table 
-	CREATE TABLE #temp_BI_MerchantGroupMIDs(
-		[CreatedBy][varchar](256) NOT NULL,
-		[TestRunDate][date]NOT NULL,
-		[TableName][varchar](256) NOT NULL,
-		[TestName][varchar](256) NOT NULL,
-		[ActualResult] [bigint] NOT NULL,
-		[ExpectedResult] [bigint] NULL,
-	)
 	-- run normal query into temp table
 	INSERT INTO 
-		#temp_BI_MerchantGroupMIDs --temp table name
-		(CreatedBy,
-		TestRunDate, 
-		TableName,
-		TestName,
-		ActualResult,
-		ExpectedResult)
+		@temp_BI_MerchantGroupMIDs(
+			TableName,
+			TestRunDate, 
+			TestName,
+			ActualResult,
+			ExpectedResult,
+			Deviation,
+			CreatedOn,
+			CreatedBy,
+			ModifiedOn,
+			ModifiedBy)
 	SELECT
-		 '[CapstoneDB].[dbo].[BI_Health_BI_MerchantGroupMIDs]', -- CreatedBy
-		 Cast(GETDATE() AS DATE), -- TestRunDate
-		'BI_MerchantGroupMIDs',--name of table
-		'ID Count',-- name of test
-		count(distinct Id),--actual result
-		40000 -- expected result 
+		'BI_MerchantGroupMIDs' AS TableName,
+		 CAST(GETDATE() AS DATE) AS TestRunDate,
+		'ID Count' AS TestName,
+		COUNT(DISTINCT id) AS ActualResult,
+		40000 AS ExpectedResult,
+		(COUNT(DISTINCT id) - 40000) AS Deviation,
+		CAST(GETDATE() AS DATE) AS CreatedOn,
+		'[CapstoneDB].[dbo].[BI_Health_BI_MerchantGroupMIDs]' AS CreatedBy,
+		NULL AS ModifiedOn,
+		NULL AS ModifiedBy
 	FROM 
-		BI_Feed.dbo.BI_MerchantGroupMIDs with(nolock); --choose table from BI_feed
+		BI_Feed.dbo.BI_MerchantGroupMIDs with(nolock);
 
-	--Altering temp table to add deviation column
-	ALTER TABLE #temp_BI_MerchantGroupMIDs ADD Deviation INT;
-
-	--Updates the Deviation column with Actual-Expected
-	UPDATE #temp_BI_MerchantGroupMIDs
-	SET Deviation = ActualResult -ExpectedResult;
-
-	--Upload data into CapstoneDB.dbo.BI_HealthResults
-	INSERT INTO 
-		CapstoneDB.dbo.BI_HealthResults
-		(Createdby,
-		TestRunDate,
-		TestName,
-		TableName,
-		ActualResult, 
-		ExpectedResult,
-		Deviation)
-	SELECT
-		CreatedBy,
-		TestRunDate,
-		TestName,
-		TableName, 
-		ActualResult,
-		ExpectedResult,
-		Deviation
-	FROM 
-		#temp_BI_MerchantGroupMIDs;--temp table 
-
-	-- Final, drop the temporary table
-	DROP TABLE #temp_BI_MerchantGroupMIDs; -- Final, drop the temporary table
+	-- upload data into CapstoneDB.dbo.BI_HealthResults
+	EXEC [dbo].[BI_InsertTestResult] @Table = @temp_BI_MerchantGroupMIDs;
 
 	SET NOCOUNT OFF;
 END
