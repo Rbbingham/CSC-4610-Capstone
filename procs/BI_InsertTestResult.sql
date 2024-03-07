@@ -1,6 +1,21 @@
 USE [CapstoneDB]
 GO
 
+/******************************************************************************
+	
+	CREATOR:	Grant Tarver
+
+	CREATED:	February 16, 2024
+
+	PURPOSE:	Inserts a new record into [CapstoneDB].[dbo].[BI_HealthResults]
+	if record doesn't already exist. Updated the record otherwise.
+
+	MODIFICATIONS:
+	2024/02/26	Rbbingham	Updated procedure to use table type 
+							[CapstoneDB].[dbo].[TnTech_TableType]
+
+******************************************************************************/
+
 CREATE OR ALTER PROCEDURE [dbo].[BI_InsertTestResult](
 	@Table [dbo].[TnTech_TableType] READONLY
 	)
