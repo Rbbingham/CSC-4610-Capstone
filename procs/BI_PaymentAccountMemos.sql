@@ -1,3 +1,6 @@
+Use [CapstoneDB]
+GO
+
 /******************************************************************************
 	
 	CREATOR:	Robert Bingham
@@ -7,9 +10,6 @@
 	PURPOSE:	Raises alerts if no new records were inserted for continuous days.
 
 ******************************************************************************/
-
-Use [CapstoneDB]
-GO
 
 CREATE OR ALTER PROCEDURE [dbo].[BI_Health_PaymentAccountMemos]
 AS 
