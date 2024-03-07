@@ -1,3 +1,6 @@
+USE [CapstoneDB]
+GO
+
 /******************************************************************************
 	
 	CREATOR:	Robert Bingham
@@ -7,9 +10,6 @@
 	PURPOSE:	Ensures that one record is insert at the 1st of the month.
 
 ******************************************************************************/
-
-Use [CapstoneDB]
-GO
 
 CREATE OR ALTER PROCEDURE [dbo].[BI_Health_VincentSLAAAgregate]
 AS 

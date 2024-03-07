@@ -1,3 +1,6 @@
+USE [CapstoneDB]
+GO
+
 /******************************************************************************
 	
 	CREATOR: Carlos Escudero
@@ -7,9 +10,6 @@
 	PURPOSE: To count the number of Admin Number for a given day, ensuring that is 21000
 
 ******************************************************************************/
-
-Use [CapstoneDB]
-GO
 
 CREATE OR ALTER PROCEDURE [dbo].[BI_Health_Toyota_Inventory] --name of procedure
 AS 

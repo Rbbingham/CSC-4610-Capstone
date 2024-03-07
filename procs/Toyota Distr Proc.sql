@@ -1,3 +1,6 @@
+USE [CapstoneDB]
+GO
+
 /******************************************************************************
 	
 	CREATOR:	Carlos Escudero
@@ -7,9 +10,6 @@
 	PURPOSE:	Counts the number of Vins in the Toyota_Distribution
 
 ******************************************************************************/
-
-USE [CapstoneDB]
-GO
 
 CREATE OR ALTER PROCEDURE [dbo].[BI_Health_Toyota_Distribution] 
 AS 

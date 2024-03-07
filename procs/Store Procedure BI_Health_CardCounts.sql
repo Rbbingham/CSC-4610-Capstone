@@ -1,3 +1,6 @@
+USE [CapstoneDB]
+GO
+
 /******************************************************************************
 	
 	CREATOR:	Lorenzo Abellanosa
@@ -7,9 +10,6 @@
 	PURPOSE:	Created Test run procedure for CardCounts table.
 
 ******************************************************************************/
-
-USE [CapstoneDB]
-GO
 
 CREATE OR ALTER PROCEDURE [dbo].[BI_Health_CardCounts]
 AS 

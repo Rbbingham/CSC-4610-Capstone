@@ -1,3 +1,6 @@
+USE  CapstoneDB
+GO
+
 /******************************************************************************
 	
 	CREATOR:	Carlos Escudero
@@ -7,9 +10,6 @@
 	PURPOSE:	Counting ID of MerchantGroupsMIDs
 
 ******************************************************************************/
-
-Use CapstoneDB
-GO
 
 CREATE OR ALTER Procedure[dbo].[BI_Health_BI_MerchantGroupMIDs]
 AS 

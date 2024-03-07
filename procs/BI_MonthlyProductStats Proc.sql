@@ -1,3 +1,6 @@
+USE [CapstoneDB]
+GO
+
 /******************************************************************************
 	
 	CREATOR:	Collin Cunningham
@@ -6,12 +9,10 @@
 
 	PURPOSE:	ID Count test for BI_MonthlyProductStats table.
 
-	UPDATE:		2/19/2024 - Updated result table to BI_HealthResults
+	MODIFICATIONS:		
+	2/19/2024	Collin Cunningham	Updated result table to BI_HealthResults
 
 ******************************************************************************/
-
-USE [CapstoneDB]
-GO
 
 CREATE OR ALTER Procedure[dbo].[BI_Health_BI_MonthlyProductStats]
 AS 
