@@ -1,3 +1,6 @@
+USE [CapstoneDB]
+GO
+
 /******************************************************************************
 	
 	CREATOR:
@@ -7,9 +10,6 @@
 	PURPOSE:
 
 ******************************************************************************/
-
-Use [CapstoneDB]
-GO
 
 CREATE OR ALTER PROCEDURE [dbo].[BI_Health_] --name of procedure
 AS 

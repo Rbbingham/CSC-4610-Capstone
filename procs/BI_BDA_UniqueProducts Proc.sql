@@ -1,3 +1,6 @@
+USE [CapstoneDB]
+GO
+
 /******************************************************************************
 	
 	CREATOR:	Carlos Escudero
@@ -7,9 +10,6 @@
 	PURPOSE:	ID Count for BI_BDA_UniqueProducts.
 
 ******************************************************************************/
-
-USE [CapstoneDB]
-GO
 
 CREATE OR ALTER PROCEDURE [dbo].[BI_Health_BI_BDA_UniqueProducts]
 AS 
@@ -34,7 +34,7 @@ BEGIN
 			ModifiedBy)
 	SELECT
 		'BI_BDA_UniqueProducts' AS TableName,
-		 CAST(GETDATE() AS DATE) AS TestRunDate,
+		CAST(GETDATE() AS DATE) AS TestRunDate,
 		'ID Count' AS TestName,
 		COUNT(DISTINCT ID) AS ActualResult,
 		3850 AS ExpectedResult,

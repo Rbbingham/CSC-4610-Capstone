@@ -1,3 +1,6 @@
+USE [CapstoneDB]
+GO
+
 /******************************************************************************
 	
 	CREATOR: Harrison Peloquin
@@ -9,9 +12,6 @@
 	4k-8k calls a day
 
 ******************************************************************************/
-
-Use [CapstoneDB]
-GO
 
 CREATE OR ALTER PROCEDURE [dbo].[BI_Health_BI_Call_Detail]
 AS 

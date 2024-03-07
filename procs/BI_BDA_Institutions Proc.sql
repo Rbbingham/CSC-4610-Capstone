@@ -1,15 +1,15 @@
+USE [CapstoneDB]
+GO
+
 /******************************************************************************
 	
 	CREATOR:	Carlos Escudero
 
 	CREATED:	2024/02/02
 
-	PURPOSE:	
+	PURPOSE:	Ensures that 20 records are available.
 
 ******************************************************************************/
-
-USE [CapstoneDB]
-GO
 
 CREATE OR ALTER PROCEDURE [dbo].[BI_Health_BI_BDA_Institutions]
 AS 
