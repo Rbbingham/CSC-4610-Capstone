@@ -12,7 +12,7 @@ BEGIN
 		SELECT 
 			* 
 		FROM 
-			CapstoneDB.dbo.BI_HealthResults AS T1
+			[CapstoneDB].[dbo].[BI_HealthResults] AS T1
 		INNER JOIN
 			@Table AS T2
 		ON 
@@ -20,7 +20,7 @@ BEGIN
 			T1.TestName = T2.TestName AND 
 			T1.TestRunDate = T2.TestRunDate)
 	BEGIN
-		PRINT N'1'
+		PRINT N'Record Updated'
 		UPDATE T1
 			SET
 				T1.TestRunDate = GETDATE(),
@@ -42,9 +42,9 @@ BEGIN
 	ELSE
 
 	BEGIN
-		PRINT N'0'
+		PRINT N'Record Inserted'
 		INSERT INTO 
-			CapstoneDB.dbo.TnTech_TestResults(
+			[CapstoneDB].[dbo].[BI_HealthResults](
 				TableName,
 				TestRunDate, 
 				TestName,
