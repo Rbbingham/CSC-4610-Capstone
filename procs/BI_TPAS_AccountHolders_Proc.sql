@@ -11,62 +11,44 @@ GO
 
 ******************************************************************************/
 
-CREATE OR ALTER Procedure[dbo].[BI_TPAS_AccountHolders] --name of procedure
+CREATE OR ALTER PROCEDURE [dbo].[BI_TPAS_AccountHolders]
 AS 
-
 BEGIN
 	SET NOCOUNT ON;
 
+	-- create temp table 
 	DECLARE @temp_BI_TPAS_AccountHolders AS [dbo].[TnTech_TableType];
 
 	-- run normal query into temp table
 	INSERT INTO 
-		@temp_BI_TPAS_AccountHolders --temp table name
-		(CreatedBy,
-		TestRunDate, 
-		TableName,
-		TestName,
-		ActualResult,
-		ExpectedResult)
+		@temp_BI_TPAS_AccountHolders(
+			TableName,
+			TestRunDate, 
+			TestName,
+			ActualResult,
+			ExpectedResult,
+			Deviation,
+			CreatedOn,
+			CreatedBy,
+			ModifiedOn,
+			ModifiedBy)
 	SELECT
-		 '[CapstoneDB].[dbo].[BI_TPAS_AccountHolders]', -- CreatedBy
-		 Cast(GETDATE() AS DATE), -- TestRunDate
-		'BI_TPAS_AccountHolders',--name of table
-		'ID Count',-- name of test
-		count(distinct Id),--actual result
-		1500000 -- expected result 
+		'BI_TPAS_AccountHolders' AS TableName,
+		CAST(GETDATE() AS DATE) AS TestRunDate,
+		'ID Count' AS TestName,
+		COUNT(DISTINCT [Id]) AS ActualResult,
+		1500000 AS ExpectedResult,
+		(COUNT(DISTINCT [Id]) - 1500000) AS Deviation,
+		CAST(GETDATE() AS DATE) AS CreatedOn,
+		'[CapstoneDB].[dbo].[BI_TPAS_AccountHolders]' AS CreatedBy,
+		NULL AS ModifiedOn,
+		NULL AS ModifiedBy
 	FROM 
-		BI_Feed.dbo.BI_TPAS_AccountHolders with(nolock); --choose table from BI_feed
+		[BI_Feed].[dbo].[BI_TPAS_AccountHolders] with (nolock);
 
-	--Altering temp table to add deviation column
-	ALTER TABLE #temp_BI_TPAS_AccountHolders ADD Deviation INT;
-
-	--Updates the Deviation column with Actual-Expected
-	UPDATE @temp_BI_TPAS_AccountHolders
-	SET Deviation = ActualResult -ExpectedResult;
-
-	--Upload data into CapstoneDB.dbo.BI_HealthResults
-	INSERT INTO 
-		CapstoneDB.dbo.BI_HealthResults
-		(Createdby,
-		TestRunDate,
-		TestName,
-		TableName,
-		ActualResult, 
-		ExpectedResult,
-		Deviation)
-	SELECT
-		CreatedBy,
-		TestRunDate,
-		TestName,
-		TableName, 
-		ActualResult,
-		ExpectedResult,
-		Deviation
-	FROM 
-		@temp_BI_TPAS_AccountHolders;--temp table 
-
-	EXEC [dbo].[BI_InsertTestResult] @Table = @temp_BI_TPAS_AccountHolders
+	-- upload data into CapstoneDB.dbo.BI_HealthResults
+	EXEC [dbo].[BI_InsertTestResult] @Table = @temp_BI_TPAS_AccountHolders;
 
 	SET NOCOUNT OFF;
-END
+END;
+GO

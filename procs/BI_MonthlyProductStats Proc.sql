@@ -14,9 +14,8 @@ GO
 
 ******************************************************************************/
 
-CREATE OR ALTER Procedure[dbo].[BI_Health_BI_MonthlyProductStats]
+CREATE OR ALTER PROCEDURE [dbo].[BI_Health_BI_MonthlyProductStats]
 AS 
-
 BEGIN
 	SET NOCOUNT ON;
 
@@ -54,4 +53,5 @@ BEGIN
 	EXEC [dbo].[BI_InsertTestResult] @Table = @temp_BI_MonthlyProductStats;
 
 	SET NOCOUNT OFF;
-END
+END;
+GO
