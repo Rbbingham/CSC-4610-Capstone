@@ -16,27 +16,12 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
-	IF OBJECT_ID('tempdb.dbo.#temp_Toyota_Distribution') IS NOT NULL BEGIN
-		DROP TABLE #temp_Toyota_Distribution
-	END;
-
-	-- create temp table 
-	CREATE TABLE #temp_Toyota_Distribution(
-		[TableName] varchar(256) NOT NULL,
-		[TestRunDate] date NOT NULL,
-		[TestName] varchar(256) NOT NULL,
-		[ActualResult] bigint NOT NULL,
-		[ExpectedResult] bigint NOT NULL,
-		[Deviation] bigint NOT NULL,
-		[CreatedOn] date NOT NULL,
-		[CreatedBy] varchar(256) NOT NULL,
-		[ModifiedOn] date NULL,
-		[ModifiedBy] varchar(256) NULL
-	);
+	-- create temp table
+	DECLARE @temp_Toyota_Distribution AS [dbo].[TnTech_TableType];
 
 	-- run normal query into temp table
 	INSERT INTO 
-		#temp_Toyota_Distribution(
+		@temp_Toyota_Distribution(
 			TableName,
 			TestRunDate, 
 			TestName,
@@ -62,33 +47,7 @@ BEGIN
 		BI_Feed.dbo.Toyota_Distribution with (nolock);
 
 	-- upload data into CapstoneDB.dbo.BI_HealthResults
-	INSERT INTO 
-		CapstoneDB.dbo.BI_HealthResults(
-			TableName,
-			TestRunDate, 
-			TestName,
-			ActualResult,
-			ExpectedResult,
-			Deviation,
-			CreatedOn,
-			CreatedBy,
-			ModifiedOn,
-			ModifiedBy)
-	SELECT
-		TableName,
-		TestRunDate, 
-		TestName,
-		ActualResult,
-		ExpectedResult,
-		Deviation,
-		CreatedOn,
-		CreatedBy,
-		ModifiedOn,
-		ModifiedBy
-	FROM 
-		#temp_Toyota_Distribution;
-
-	DROP TABLE #temp_Toyota_Distribution;
+	EXEC [dbo].[BI_InsertTestResult] @Table = @temp_Toyota_Distribution;
 
 	SET NOCOUNT OFF;
 END;
