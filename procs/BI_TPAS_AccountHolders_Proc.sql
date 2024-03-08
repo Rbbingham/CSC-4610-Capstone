@@ -1,11 +1,15 @@
--- =============================================
--- Author: Lorenzo Abellanosa  
--- Create Date: 2/26/24
--- Description: Counting ID of BI_TPAS_AccountHolders
--- =============================================
-
-Use CapstoneDB
+USE CapstoneDB
 GO
+
+/******************************************************************************
+	
+	CREATOR:	Lorenzo Abellanosa
+
+	CREATED:	2/26/2024
+
+	PURPOSE:	Counting ID of BI_TPAS_AccountHolders.
+
+******************************************************************************/
 
 CREATE OR ALTER Procedure[dbo].[BI_TPAS_AccountHolders] --name of procedure
 AS 
