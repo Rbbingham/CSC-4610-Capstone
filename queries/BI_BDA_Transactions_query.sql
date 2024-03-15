@@ -142,20 +142,35 @@ DetailInfo AS (
 			ELSE 'NULL'
 		END as day_of_week,
 		CASE
-			WHEN DATEPART(day, CAST(createdOn as DATE)) = 2 THEN 'SecondofMonth'
-			WHEN DATEPART(day, CAST(createdOn as DATE)) = 9 THEN 'NinthofMonth'
+			WHEN DATEPART(day, CAST(createdOn as DATE)) = 2 THEN 'Sec'
+			WHEN DATEPART(day, CAST(createdOn as DATE)) = 9 THEN 'Nin'
 			ELSE 'NULL'
 		END as day_of_month,
 		COUNT(tranID) as ActualResult
 	FROM BI_Feed.dbo.BI_BDA_Transactions WITH (nolock)
 	WHERE createdOn >= DATEADD(day, -183, GETDATE())
 	GROUP BY CAST(createdOn as DATE), DATEPART(WEEKDAY, createdOn)
+),
+ExpectedCalculator AS (
+	SELECT
+		transactionDate,
+		CASE
+			WHEN DayOfMonthAverages.dayofMonthAvgTranIDCount = 'Sec' THEN (dayofMonthAvgTranIDCount + weeklyAvgTranIDCount) / 2
+			WHEN DayOfMonthAverages.dayofMonthAvgTranIDCount = 'Nin' THEN (dayofMonthAvgTranIDCount + weeklyAvgTranIDCount) / 2
+			ELSE weeklyAvgTranIDCount
+		END as ExpectedResult
+	FROM DetailInfo
+	FULL OUTER JOIN WeeklyAverages on WeeklyAverages.day_of_week = DetailInfo.day_of_week
+	FULL OUTER JOIN DayOfMonthAverages on DayOfMonthAverages.day_of_month = DetailInfo.day_of_month
+	WHERE transactionDate >= DATEADD(day, -183, GETDATE())
+	GROUP BY transactionDate
 )
 SELECT
 	transactionDate,
-	dayofMonthAvgTranIDCount,
-	weeklyAvgTranIDCount,
 	ActualResult,
+	CASE
+		--
+	END as ExpectedResult,
 	CASE
 		WHEN ActualResult <= weeklyAvgTranIDCount THEN weeklyAvgTranIDCount - ActualResult
 		WHEN ActualResult > weeklyAvgTranIDCount THEN ActualResult - weeklyAvgTranIDCount
