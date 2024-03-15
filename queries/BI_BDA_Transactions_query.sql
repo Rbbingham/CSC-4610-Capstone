@@ -195,7 +195,7 @@ GROUP BY transactionDate, #DayOfMonthAverages.day_of_month, dayofMonthAvgTranIDC
 -- Select query with deviations
 SELECT
 	#DetailInfo.transactionDate,
-	ExpectedResult,
+	CAST(ExpectedResult AS INT) as ExpectedResult,
 	ActualResult,
 	CASE
 		WHEN ActualResult <= ExpectedResult THEN CAST(ExpectedResult - ActualResult AS INT)
