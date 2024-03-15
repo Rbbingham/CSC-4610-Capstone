@@ -270,32 +270,32 @@ INSERT INTO #ExpectedCalculator
 SELECT
 	transactionDate,
 	CASE
-		WHEN DayOfMonthAverages.dayofMonthAvgTranIDCount = 'Sec' THEN (dayofMonthAvgTranIDCount + weeklyAvgTranIDCount) / 2
-		WHEN DayOfMonthAverages.dayofMonthAvgTranIDCount = 'Nin' THEN (dayofMonthAvgTranIDCount + weeklyAvgTranIDCount) / 2
+		WHEN DayOfMonthAverages.day_of_month = 'Sec' THEN (dayofMonthAvgTranIDCount + weeklyAvgTranIDCount) / 2
+		WHEN DayOfMonthAverages.day_of_month = 'Nin' THEN (dayofMonthAvgTranIDCount + weeklyAvgTranIDCount) / 2
 		ELSE weeklyAvgTranIDCount
 	END as ExpectedResult
-FROM #DetailInfo DetailInfo
-FULL OUTER JOIN #WeeklyAverages WeeklyAverages on WeeklyAverages.day_of_week = DetailInfo.day_of_week
-FULL OUTER JOIN #DayOfMonthAverages DayOfMonthAverages on DayOfMonthAverages.day_of_month = DetailInfo.day_of_month
+FROM #DetailInfo
+FULL OUTER JOIN #WeeklyAverages on WeeklyAverages.day_of_week = DetailInfo.day_of_week
+FULL OUTER JOIN #DayOfMonthAverages on DayOfMonthAverages.day_of_month = DetailInfo.day_of_month
 WHERE transactionDate >= DATEADD(day, -183, GETDATE())
-GROUP BY transactionDate;
+GROUP BY transactionDate, DayOfMonthAverages.day_of_month;
 
 -- Select query with deviations
-SELECT
-	transactionDate,
-	ActualResult,
-	ExpectedResult,
-	CASE
-		WHEN ActualResult <= weeklyAvgTranIDCount THEN weeklyAvgTranIDCount - ActualResult
-		WHEN ActualResult > weeklyAvgTranIDCount THEN ActualResult - weeklyAvgTranIDCount
-	END as Deviation
-FROM #DetailInfo
-FULL OUTER JOIN #WeeklyAverages on #WeeklyAverages.day_of_week = #DetailInfo.day_of_week
-FULL OUTER JOIN #DayOfMonthAverages on #DayOfMonthAverages.day_of_month = #DetailInfo.day_of_month
-LEFT JOIN #ExpectedCalculator ON #ExpectedCalculator.transactionDate = #DetailInfo.transactionDate
-WHERE transactionDate >= DATEADD(day, -183, GETDATE())
-GROUP BY transactionDate, dayofMonthAvgTranIDCount, weeklyAvgTranIDCount, ActualResult
-ORDER BY transactionDate DESC;
+--SELECT
+--	transactionDate,
+--	ActualResult,
+--	ExpectedResult,
+--	CASE
+--		WHEN ActualResult <= weeklyAvgTranIDCount THEN weeklyAvgTranIDCount - ActualResult
+--		WHEN ActualResult > weeklyAvgTranIDCount THEN ActualResult - weeklyAvgTranIDCount
+--	END as Deviation
+--FROM #DetailInfo
+--FULL OUTER JOIN #WeeklyAverages on #WeeklyAverages.day_of_week = #DetailInfo.day_of_week
+--FULL OUTER JOIN #DayOfMonthAverages on #DayOfMonthAverages.day_of_month = #DetailInfo.day_of_month
+--LEFT JOIN #ExpectedCalculator ON #ExpectedCalculator.transactionDate = #DetailInfo.transactionDate
+--WHERE transactionDate >= DATEADD(day, -183, GETDATE())
+--GROUP BY transactionDate, dayofMonthAvgTranIDCount, weeklyAvgTranIDCount, ActualResult
+--ORDER BY transactionDate DESC;
 
 -- Drop temporary tables
 DROP TABLE #WeeklyAverages;
