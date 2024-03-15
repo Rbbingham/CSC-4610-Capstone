@@ -389,12 +389,12 @@ GROUP BY CAST(createdOn as DATE), DATEPART(WEEKDAY, createdOn);
 SELECT
     transactionDate,
     CASE
-        WHEN DayOfMonthAverages.day_of_month = 'Sec' THEN (dayofMonthAvgTranIDCount + weeklyAvgTranIDCount) / 2
-        WHEN DayOfMonthAverages.day_of_month = 'Nin' THEN (dayofMonthAvgTranIDCount + weeklyAvgTranIDCount) / 2
+        WHEN #DayOfMonthAverages.day_of_month = 'Sec' THEN (dayofMonthAvgTranIDCount + weeklyAvgTranIDCount) / 2
+        WHEN #DayOfMonthAverages.day_of_month = 'Nin' THEN (dayofMonthAvgTranIDCount + weeklyAvgTranIDCount) / 2
         ELSE weeklyAvgTranIDCount
     END as ExpectedResult
 FROM #DetailInfo
 FULL OUTER JOIN #WeeklyAverages on #WeeklyAverages.day_of_week = #DetailInfo.day_of_week
 FULL OUTER JOIN #DayOfMonthAverages on #DayOfMonthAverages.day_of_month = #DetailInfo.day_of_month
 WHERE transactionDate >= DATEADD(day, -183, GETDATE())
-GROUP BY transactionDate, DayOfMonthAverages.day_of_month;
+GROUP BY transactionDate, #DayOfMonthAverages.day_of_month, dayofMonthAvgTranIDCount, weeklyAvgTranIDCount;
