@@ -134,27 +134,35 @@ DayOfMonthAverages AS (
 DetailInfo AS (
 	SELECT
 		CAST(createdOn as DATE) as transactionDate, 
-		DATEPART(day, CAST(createdOn as DATE)) as day_of_month,
-		DATEPART(WEEKDAY, CAST(createdOn as DATE)) as day_of_week,
+		CASE
+			WHEN DATEPART(WEEKDAY, createdOn) IN (1,2) THEN 'Sun-Mon'
+			WHEN DATEPART(WEEKDAY, createdOn) IN (3,4,5) THEN 'Tues-Thur'
+			WHEN DATEPART(WEEKDAY, createdOn) = 6 THEN 'Fri'
+			WHEN DATEPART(WEEKDAY, createdOn) = 7 THEN 'Sat'
+			ELSE 'NULL'
+		END as day_of_week,
+		CASE
+			WHEN DATEPART(day, CAST(createdOn as DATE)) = 2 THEN 'SecondofMonth'
+			WHEN DATEPART(day, CAST(createdOn as DATE)) = 9 THEN 'NinthofMonth'
+			ELSE 'NULL'
+		END as day_of_month,
 		COUNT(tranID) as ActualResult
 	FROM BI_Feed.dbo.BI_BDA_Transactions WITH (nolock)
 	WHERE createdOn >= DATEADD(day, -183, GETDATE())
-	GROUP BY CAST(createdOn as DATE)
+	GROUP BY CAST(createdOn as DATE), DATEPART(WEEKDAY, createdOn)
 )
 SELECT
 	transactionDate,
-	DetailInfo.day_of_month,
-	DetailInfo.day_of_week,
 	dayofMonthAvgTranIDCount,
 	weeklyAvgTranIDCount,
-	ActualResult
-	--CASE
-	--	WHEN ActualResult <= avgTranIDCount THEN avgTranIDCount - ActualResult
-	--	WHEN ActualResult > avgTranIDCount THEN ActualResult - avgTranIDCount
-	--END as Deviation
+	ActualResult,
+	CASE
+		WHEN ActualResult <= weeklyAvgTranIDCount THEN weeklyAvgTranIDCount - ActualResult
+		WHEN ActualResult > weeklyAvgTranIDCount THEN ActualResult - weeklyAvgTranIDCount
+	END as Deviation
 FROM DetailInfo
 FULL OUTER JOIN WeeklyAverages on WeeklyAverages.day_of_week = DetailInfo.day_of_week
 FULL OUTER JOIN DayOfMonthAverages on DayOfMonthAverages.day_of_month = DetailInfo.day_of_month
 WHERE transactionDate >= DATEADD(day, -183, GETDATE())
-GROUP BY transactionDate, DetailInfo.day_of_month, DetailInfo.day_of_week, dayofMonthAvgTranIDCount, weeklyAvgTranIDCount, ActualResult
+GROUP BY transactionDate, dayofMonthAvgTranIDCount, weeklyAvgTranIDCount, ActualResult
 ORDER BY transactionDate DESC;
