@@ -199,10 +199,7 @@ SELECT
 	#DetailInfo.transactionDate,
 	ExpectedResult,
 	ActualResult,
-	CASE
-		WHEN ActualResult <= ExpectedResult THEN CAST(ExpectedResult - ActualResult AS INT)
-		WHEN ActualResult > ExpectedResult THEN CAST(ActualResult - ExpectedResult AS INT)
-	END as Deviation
+	ABS(ExpectedResult - ActualResult) as Deviation
 FROM #DetailInfo
 FULL OUTER JOIN #WeeklyAverages on #WeeklyAverages.day_of_week = #DetailInfo.day_of_week
 FULL OUTER JOIN #DayOfMonthAverages on #DayOfMonthAverages.day_of_month = #DetailInfo.day_of_month
