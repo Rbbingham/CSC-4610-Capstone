@@ -139,7 +139,7 @@ FROM
 		END as day_of_month,
 		COUNT(tranID) as ActualResult
 	FROM BI_Feed.dbo.BI_BDA_Transactions WITH (nolock)
-	WHERE createdOn >= DATEADD(day, -91, GETDATE())
+	WHERE createdOn >= DATEADD(day, -62, GETDATE())
 	GROUP BY CAST(createdOn AS DATE)
 ) AS subquery
 GROUP BY day_of_month;
@@ -196,6 +196,7 @@ GROUP BY transactionDate, #DayOfMonthAverages.day_of_month, dayofMonthAvgTranIDC
 SELECT
 	#DetailInfo.transactionDate,
 	#DayOfMonthAverages.day_of_month,
+	#WeeklyAverages.day_of_week,
 	CAST(ExpectedResult AS INT) as ExpectedResult,
 	ActualResult,
 	CASE
@@ -205,9 +206,9 @@ SELECT
 FROM #DetailInfo
 FULL OUTER JOIN #WeeklyAverages on #WeeklyAverages.day_of_week = #DetailInfo.day_of_week
 FULL OUTER JOIN #DayOfMonthAverages on #DayOfMonthAverages.day_of_month = #DetailInfo.day_of_month
-LEFT JOIN #ExpectedCalculator ON #ExpectedCalculator.transactionDate = #DetailInfo.transactionDate
+FULL OUTER JOIN #ExpectedCalculator ON #ExpectedCalculator.transactionDate = #DetailInfo.transactionDate
 WHERE #DetailInfo.transactionDate >= DATEADD(day, -183, GETDATE())
-GROUP BY #DetailInfo.transactionDate, #DayOfMonthAverages.day_of_month, ExpectedResult, ActualResult
+GROUP BY #DetailInfo.transactionDate, #DayOfMonthAverages.day_of_month, #WeeklyAverages.day_of_week, ExpectedResult, ActualResult
 ORDER BY #DetailInfo.transactionDate DESC;
 
 -- Drop temporary tables
