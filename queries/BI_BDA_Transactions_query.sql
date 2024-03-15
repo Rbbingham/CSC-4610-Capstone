@@ -213,3 +213,62 @@ DROP TABLE #WeeklyAverages;
 DROP TABLE #DayOfMonthAverages;
 DROP TABLE #DetailInfo;
 DROP TABLE #ExpectedCalculator;
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+-- Create temporary table for detailed information
+CREATE TABLE #DetailInfo (
+    transactionDate DATE,
+    day_of_week NVARCHAR(20),
+    day_of_month NVARCHAR(20),
+    ActualResult INT,
+    ExpectedResult INT
+);
+
+-- Populate detailed information and calculate expected results
+INSERT INTO #DetailInfo
+SELECT
+    CAST(createdOn as DATE) as transactionDate, 
+    CASE
+        WHEN DATEPART(WEEKDAY, createdOn) IN (1,2) THEN 'Sun-Mon'
+        WHEN DATEPART(WEEKDAY, createdOn) IN (3,4) THEN 'Tues-Wed'
+        WHEN DATEPART(WEEKDAY, createdOn) = 5 THEN 'Thur'
+        WHEN DATEPART(WEEKDAY, createdOn) = 6 THEN 'Fri'
+        WHEN DATEPART(WEEKDAY, createdOn) = 7 THEN 'Sat'
+        ELSE 'NULL'
+    END as day_of_week,
+    CASE
+        WHEN DATEPART(day, CAST(createdOn as DATE)) = 2 THEN 'Sec'
+        WHEN DATEPART(day, CAST(createdOn as DATE)) = 9 THEN 'Nin'
+        ELSE 'NULL'
+    END as day_of_month,
+    COUNT(tranID) as ActualResult,
+    CASE
+        WHEN DATEPART(day, CAST(createdOn as DATE)) = 2 THEN 'Sec'
+        WHEN DATEPART(day, CAST(createdOn as DATE)) = 9 THEN 'Nin'
+        ELSE 'NULL'
+    END as day_of_month_exp,
+    CASE
+        WHEN DATEPART(WEEKDAY, createdOn) IN (1,2) THEN 'Sun-Mon'
+        WHEN DATEPART(WEEKDAY, createdOn) IN (3,4) THEN 'Tues-Wed'
+        WHEN DATEPART(WEEKDAY, createdOn) = 5 THEN 'Thur'
+        WHEN DATEPART(WEEKDAY, createdOn) = 6 THEN 'Fri'
+        WHEN DATEPART(WEEKDAY, createdOn) = 7 THEN 'Sat'
+        ELSE 'NULL'
+    END as day_of_week_exp
+FROM BI_Feed.dbo.BI_BDA_Transactions WITH (nolock)
+WHERE createdOn >= DATEADD(day, -183, GETDATE())
+GROUP BY CAST(createdOn as DATE), DATEPART(WEEKDAY, createdOn), DATEPART(day, CAST(createdOn as DATE));
+
+-- Select query with deviations
+SELECT
+    transactionDate,
+    ExpectedResult,
+    ActualResult,
+    ABS(ExpectedResult - ActualResult) as Deviation
+FROM #DetailInfo
+WHERE transactionDate >= DATEADD(day, -183, GETDATE())
+ORDER BY transactionDate DESC;
+
+-- Drop temporary table
+DROP TABLE #DetailInfo;
