@@ -97,23 +97,24 @@ ORDER BY CAST(createdOn AS DATE) DESC;
 -- Create a temporary table for weekly averages
 CREATE TABLE #WeeklyAverages (
 	day_of_week NVARCHAR(20),
-	weeklyAvgTranIDCount DECIMAL(18,2)
+	weeklyIDCountAvg DECIMAL(18,2)
 );
 
 INSERT INTO #WeeklyAverages
-SELECT day_of_week, AVG(ActualResult) as weeklyAvgTranIDCount
+SELECT day_of_week, AVG(tranIDCount) as weeklyIDCountAvg
 FROM
 (
 	SELECT
 		CAST(createdOn AS DATE) AS createdOn,
 		CASE
 			WHEN DATEPART(WEEKDAY, createdOn) IN (1,2) THEN 'Sun-Mon'
-			WHEN DATEPART(WEEKDAY, createdOn) IN (3,4,5) THEN 'Tues-Thur'
+			WHEN DATEPART(WEEKDAY, createdOn) IN (3,4) THEN 'Tues-Wed'
+			WHEN DATEPART(WEEKDAY, createdOn) = 5 THEN 'Thur'
 			WHEN DATEPART(WEEKDAY, createdOn) = 6 THEN 'Fri'
 			WHEN DATEPART(WEEKDAY, createdOn) = 7 THEN 'Sat'
 			ELSE 'NULL'
 		END as day_of_week,
-		COUNT(tranID) as ActualResult
+		COUNT(tranID) as tranIDCount
 	FROM BI_Feed.dbo.BI_BDA_Transactions WITH (nolock)
 	WHERE createdOn >= DATEADD(day, -183, GETDATE())
 	GROUP BY CAST(createdOn AS DATE), DATEPART(WEEKDAY, createdOn)
@@ -123,11 +124,11 @@ GROUP BY day_of_week;
 -- Create a temporary table for day of month averages
 CREATE TABLE #DayOfMonthAverages (
 	day_of_month NVARCHAR(20),
-	dayofMonthAvgTranIDCount DECIMAL(18,2)
+	dayofMonthIDCountAvg DECIMAL(18,2)
 );
 
 INSERT INTO #DayOfMonthAverages
-SELECT day_of_month, AVG(ActualResult) as dayofMonthAvgTranIDCount
+SELECT day_of_month, AVG(tranIDCount) as dayofMonthIDCountAvg
 FROM
 (
 	SELECT
@@ -137,7 +138,7 @@ FROM
 			WHEN DATEPART(day, CAST(createdOn as DATE)) = 9 THEN 'Nin'
 			ELSE 'NULL'
 		END as day_of_month,
-		COUNT(tranID) as ActualResult
+		COUNT(tranID) as tranIDCount
 	FROM BI_Feed.dbo.BI_BDA_Transactions WITH (nolock)
 	WHERE createdOn >= DATEADD(day, -62, GETDATE())
 	GROUP BY CAST(createdOn AS DATE)
@@ -157,7 +158,8 @@ SELECT
 	CAST(createdOn as DATE) as transactionDate, 
 	CASE
 		WHEN DATEPART(WEEKDAY, createdOn) IN (1,2) THEN 'Sun-Mon'
-		WHEN DATEPART(WEEKDAY, createdOn) IN (3,4,5) THEN 'Tues-Thur'
+		WHEN DATEPART(WEEKDAY, createdOn) IN (3,4) THEN 'Tues-Wed'
+		WHEN DATEPART(WEEKDAY, createdOn) = 5 THEN 'Thur'
 		WHEN DATEPART(WEEKDAY, createdOn) = 6 THEN 'Fri'
 		WHEN DATEPART(WEEKDAY, createdOn) = 7 THEN 'Sat'
 		ELSE 'NULL'
@@ -182,22 +184,20 @@ INSERT INTO #ExpectedCalculator
 SELECT
     transactionDate,
     CASE
-        WHEN #DayOfMonthAverages.day_of_month IN ('Sec', 'Nin') THEN CAST((dayofMonthAvgTranIDCount * 0.99 + weeklyAvgTranIDCount * 0.01) AS INT)
-        ELSE CAST(weeklyAvgTranIDCount AS INT)
+        WHEN #DayOfMonthAverages.day_of_month IN ('Sec', 'Nin') THEN CAST((dayofMonthIDCountAvg * 0.99 + weeklyIDCountAvg * 0.01) AS INT)
+        ELSE CAST(weeklyIDCountAvg AS INT)
     END as ExpectedResult
 FROM #DetailInfo
 FULL OUTER JOIN #WeeklyAverages on #WeeklyAverages.day_of_week = #DetailInfo.day_of_week
 FULL OUTER JOIN #DayOfMonthAverages on #DayOfMonthAverages.day_of_month = #DetailInfo.day_of_month
 WHERE transactionDate >= DATEADD(day, -183, GETDATE())
-GROUP BY transactionDate, #DayOfMonthAverages.day_of_month, dayofMonthAvgTranIDCount, weeklyAvgTranIDCount;
+GROUP BY transactionDate, #DayOfMonthAverages.day_of_month, dayofMonthIDCountAvg, weeklyIDCountAvg;
 
 
 -- Select query with deviations
 SELECT
 	#DetailInfo.transactionDate,
-	#DayOfMonthAverages.day_of_month,
-	#WeeklyAverages.day_of_week,
-	CAST(ExpectedResult AS INT) as ExpectedResult,
+	ExpectedResult,
 	ActualResult,
 	CASE
 		WHEN ActualResult <= ExpectedResult THEN CAST(ExpectedResult - ActualResult AS INT)
@@ -208,7 +208,7 @@ FULL OUTER JOIN #WeeklyAverages on #WeeklyAverages.day_of_week = #DetailInfo.day
 FULL OUTER JOIN #DayOfMonthAverages on #DayOfMonthAverages.day_of_month = #DetailInfo.day_of_month
 FULL OUTER JOIN #ExpectedCalculator ON #ExpectedCalculator.transactionDate = #DetailInfo.transactionDate
 WHERE #DetailInfo.transactionDate >= DATEADD(day, -183, GETDATE())
-GROUP BY #DetailInfo.transactionDate, #DayOfMonthAverages.day_of_month, #WeeklyAverages.day_of_week, ExpectedResult, ActualResult
+GROUP BY #DetailInfo.transactionDate, ExpectedResult, ActualResult
 ORDER BY #DetailInfo.transactionDate DESC;
 
 -- Drop temporary tables
