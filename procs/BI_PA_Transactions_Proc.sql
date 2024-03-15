@@ -117,7 +117,7 @@ DetailInfo as (
 ---------------------------------------------------------------------------------------------
 ----- CTE for COUNT(distinct paymentAccountId) as PaymentAccountId----------------------
 
-	WITH WeeklyAverages2 as (
+WITH WeeklyAverages2 as (
 	SELECT 
 		timespan, 
 		AVG(PaymentAccountId) as AverageResult
