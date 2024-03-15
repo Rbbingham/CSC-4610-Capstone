@@ -133,13 +133,13 @@ FROM
 	SELECT
 		CAST(createdOn AS DATE) AS createdOn,
 		CASE
-			WHEN DATEPART(day, CAST(createdOn as DATE)) = 2 THEN 'SecondofMonth'
-			WHEN DATEPART(day, CAST(createdOn as DATE)) = 9 THEN 'NinthofMonth'
+			WHEN DATEPART(day, CAST(createdOn as DATE)) = 2 THEN 'Sec'
+			WHEN DATEPART(day, CAST(createdOn as DATE)) = 9 THEN 'Nin'
 			ELSE 'NULL'
 		END as day_of_month,
 		COUNT(tranID) as ActualResult
 	FROM BI_Feed.dbo.BI_BDA_Transactions WITH (nolock)
-	WHERE createdOn >= DATEADD(day, -183, GETDATE())
+	WHERE createdOn >= DATEADD(day, -91, GETDATE())
 	GROUP BY CAST(createdOn AS DATE)
 ) AS subquery
 GROUP BY day_of_month;
@@ -175,14 +175,14 @@ GROUP BY CAST(createdOn as DATE), DATEPART(WEEKDAY, createdOn);
 -- Create a temporary table for expected results
 CREATE TABLE #ExpectedCalculator (
 	transactionDate DATE,
-	ExpectedResult DECIMAL(18,2)
+	ExpectedResult INT
 );
 
 INSERT INTO #ExpectedCalculator
 SELECT
     transactionDate,
     CASE
-        WHEN #DayOfMonthAverages.day_of_month IN ('Sec', 'Nin') THEN CAST((dayofMonthAvgTranIDCount + weeklyAvgTranIDCount) / 2 AS INT)
+        WHEN #DayOfMonthAverages.day_of_month IN ('Sec', 'Nin') THEN CAST((dayofMonthAvgTranIDCount * 0.99 + weeklyAvgTranIDCount * 0.01) AS INT)
         ELSE CAST(weeklyAvgTranIDCount AS INT)
     END as ExpectedResult
 FROM #DetailInfo
@@ -195,6 +195,7 @@ GROUP BY transactionDate, #DayOfMonthAverages.day_of_month, dayofMonthAvgTranIDC
 -- Select query with deviations
 SELECT
 	#DetailInfo.transactionDate,
+	#DayOfMonthAverages.day_of_month,
 	CAST(ExpectedResult AS INT) as ExpectedResult,
 	ActualResult,
 	CASE
@@ -206,7 +207,7 @@ FULL OUTER JOIN #WeeklyAverages on #WeeklyAverages.day_of_week = #DetailInfo.day
 FULL OUTER JOIN #DayOfMonthAverages on #DayOfMonthAverages.day_of_month = #DetailInfo.day_of_month
 LEFT JOIN #ExpectedCalculator ON #ExpectedCalculator.transactionDate = #DetailInfo.transactionDate
 WHERE #DetailInfo.transactionDate >= DATEADD(day, -183, GETDATE())
-GROUP BY #DetailInfo.transactionDate, ExpectedResult, ActualResult
+GROUP BY #DetailInfo.transactionDate, #DayOfMonthAverages.day_of_month, ExpectedResult, ActualResult
 ORDER BY #DetailInfo.transactionDate DESC;
 
 -- Drop temporary tables
