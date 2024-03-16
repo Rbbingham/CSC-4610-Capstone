@@ -165,6 +165,3 @@ BEGIN
 	SET NOCOUNT OFF;
 END;
 GO
-
-SELECT * from [dbo].[BI_HealthResults]
-EXEC [dbo].[BI_Health_BI_BDA_Transactions];
