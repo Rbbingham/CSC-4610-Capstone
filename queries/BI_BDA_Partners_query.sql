@@ -91,3 +91,75 @@ FROM
 	--ORDER BY CAST(createdOn AS DATE) DESC
 ) as subquery
 GROUP BY day_of_week;
+
+--------------------------------------------------------------------------------
+
+CREATE TABLE #WeeklyAverages (
+	day_of_week NVARCHAR(20),
+	weeklyIDCountAvg DECIMAL(18,2)
+);
+
+INSERT INTO #WeeklyAverages
+SELECT day_of_week, AVG(IDCount) as weeklyIDCountAvg
+FROM 
+(
+	SELECT
+		CAST(createdOn AS DATE) AS createdOn,
+		CASE
+			WHEN DATEPART(WEEKDAY, createdOn) = 1 THEN 'Sun'
+			WHEN DATEPART(WEEKDAY, createdOn) = 2 THEN 'Mon'
+			WHEN DATEPART(WEEKDAY, createdOn) = 3 THEN 'Tues'
+			WHEN DATEPART(WEEKDAY, createdOn) = 4 THEN 'Wed'
+			WHEN DATEPART(WEEKDAY, createdOn) = 5 THEN 'Thur'
+			WHEN DATEPART(WEEKDAY, createdOn) = 6 THEN 'Fri'
+			WHEN DATEPART(WEEKDAY, createdOn) = 7 THEN 'Sat'
+			ELSE 'NULL'
+		END as day_of_week,
+		COUNT(ID) as IDCount
+	FROM BI_Feed.dbo.BI_BDA_Partners
+	WHERE createdOn >= DATEADD(day, -365, CAST(GETDATE() AS DATE))
+	GROUP BY CAST(createdOn AS DATE), DATEPART(WEEKDAY, createdOn)
+	--ORDER BY CAST(createdOn AS DATE) DESC
+) as subquery
+GROUP BY day_of_week;
+
+CREATE TABLE #DetailInfo (
+	createdOn DATE,
+	day_of_week NVARCHAR(20),
+	ActualResult INT
+);
+
+INSERT INTO #DetailInfo
+SELECT
+	CAST(createdOn AS DATE) AS createdOn,
+	CASE
+		WHEN DATEPART(WEEKDAY, createdOn) = 1 THEN 'Sun'
+		WHEN DATEPART(WEEKDAY, createdOn) = 2 THEN 'Mon'
+		WHEN DATEPART(WEEKDAY, createdOn) = 3 THEN 'Tues'
+		WHEN DATEPART(WEEKDAY, createdOn) = 4 THEN 'Wed'
+		WHEN DATEPART(WEEKDAY, createdOn) = 5 THEN 'Thur'
+		WHEN DATEPART(WEEKDAY, createdOn) = 6 THEN 'Fri'
+		WHEN DATEPART(WEEKDAY, createdOn) = 7 THEN 'Sat'
+		ELSE 'NULL'
+	END as day_of_week,
+	COUNT(ID) as IDCount
+FROM BI_Feed.dbo.BI_BDA_Partners
+WHERE createdOn >= DATEADD(day, -365, CAST(GETDATE() AS DATE))
+GROUP BY CAST(createdOn AS DATE), DATEPART(WEEKDAY, createdOn)
+ORDER BY CAST(createdOn AS DATE) DESC
+
+
+SELECT
+	#DetailInfo.createdOn,
+	#WeeklyAverages.weeklyIDCountAvg as ExpectedResult,
+	ActualResult,
+	ABS(#WeeklyAverages.weeklyIDCountAvg - ActualResult) as Deviation
+FROM #DetailInfo
+FULL OUTER JOIN #WeeklyAverages on #WeeklyAverages.day_of_week = #DetailInfo.day_of_week
+WHERE #DetailInfo.createdOn >= DATEADD(day, -365, GETDATE())
+GROUP BY #DetailInfo.createdOn, #WeeklyAverages.weeklyIDCountAvg, ActualResult
+ORDER BY #DetailInfo.createdOn DESC;
+
+
+DROP TABLE #WeeklyAverages;
+DROP TABLE #DetailInfo;
