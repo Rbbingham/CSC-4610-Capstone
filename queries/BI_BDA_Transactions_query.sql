@@ -204,7 +204,7 @@ FROM #DetailInfo
 FULL OUTER JOIN #WeeklyAverages on #WeeklyAverages.day_of_week = #DetailInfo.day_of_week
 FULL OUTER JOIN #DayOfMonthAverages on #DayOfMonthAverages.day_of_month = #DetailInfo.day_of_month
 FULL OUTER JOIN #ExpectedCalculator ON #ExpectedCalculator.transactionDate = #DetailInfo.transactionDate
-WHERE #DetailInfo.transactionDate >= DATEADD(day, -183, GETDATE())
+WHERE #DetailInfo.transactionDate >= DATEADD(day, -2, GETDATE())
 GROUP BY #DetailInfo.transactionDate, ExpectedResult, ActualResult
 ORDER BY #DetailInfo.transactionDate DESC;
 
