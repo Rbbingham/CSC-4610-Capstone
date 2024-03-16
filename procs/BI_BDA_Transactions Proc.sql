@@ -148,7 +148,7 @@ BEGIN
 		FULL OUTER JOIN #WeeklyAverages on #WeeklyAverages.day_of_week = #DetailInfo.day_of_week
 		FULL OUTER JOIN #DayOfMonthAverages on #DayOfMonthAverages.day_of_month = #DetailInfo.day_of_month
 		FULL OUTER JOIN #ExpectedCalculator ON #ExpectedCalculator.transactionDate = #DetailInfo.transactionDate
-		WHERE #DetailInfo.transactionDate >= DATEADD(day, -183, GETDATE())
+		WHERE #DetailInfo.transactionDate = DATEADD(day, -1, CAST(GETDATE() AS DATE))
 		GROUP BY #DetailInfo.transactionDate, ExpectedResult, ActualResult
 		ORDER BY #DetailInfo.transactionDate DESC;
 
@@ -165,3 +165,6 @@ BEGIN
 	SET NOCOUNT OFF;
 END;
 GO
+
+SELECT * from [dbo].[BI_HealthResults]
+EXEC [dbo].[BI_Health_BI_BDA_Transactions];
