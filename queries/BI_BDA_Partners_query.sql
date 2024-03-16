@@ -151,15 +151,15 @@ ORDER BY CAST(createdOn AS DATE) DESC
 
 SELECT
 	#DetailInfo.createdOn,
-	#WeeklyAverages.weeklyIDCountAvg as ExpectedResult,
+	CAST(#WeeklyAverages.weeklyIDCountAvg as INT) as ExpectedResult,
 	ActualResult,
-	ABS(#WeeklyAverages.weeklyIDCountAvg - ActualResult) as Deviation
+	CAST(ABS(#WeeklyAverages.weeklyIDCountAvg - ActualResult) AS INT) as Deviation
 FROM #DetailInfo
 FULL OUTER JOIN #WeeklyAverages on #WeeklyAverages.day_of_week = #DetailInfo.day_of_week
 WHERE #DetailInfo.createdOn >= DATEADD(day, -365, GETDATE())
 GROUP BY #DetailInfo.createdOn, #WeeklyAverages.weeklyIDCountAvg, ActualResult
 ORDER BY #DetailInfo.createdOn DESC;
 
-
+-- drop tables
 DROP TABLE #WeeklyAverages;
 DROP TABLE #DetailInfo;
