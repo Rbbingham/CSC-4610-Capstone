@@ -239,7 +239,6 @@ GROUP BY transactionDate, #DayOfMonthAvgs.day_of_month, #WeeklyAverages.timespan
 
 SELECT
 	#DetailInfo.transactionDate,
-	#DetailInfo.day_of_month,
 	ExpectedResult,
 	ActualResult,
 	ABS(ExpectedResult - ActualResult) as Deviation
@@ -247,8 +246,8 @@ FROM #DetailInfo
 FULL OUTER JOIN #DayOfMonthAvgs ON #DetailInfo.day_of_month = #DayOfMonthAvgs.day_of_month
 FULL OUTER JOIN #WeeklyAverages ON #DetailInfo.timespan = #WeeklyAverages.timespan
 FULL OUTER JOIN #ExpectedCalculator ON #ExpectedCalculator.transactionDate = #DetailInfo.transactionDate
-WHERE #DetailInfo.transactionDate >= DATEADD(day, -183, GETDATE())
-GROUP BY #DetailInfo.transactionDate, #DetailInfo.day_of_month, ExpectedResult, ActualResult
+WHERE #DetailInfo.transactionDate = DATEADD(day, -1, CAST(GETDATE() AS DATE))
+GROUP BY #DetailInfo.transactionDate, ExpectedResult, ActualResult
 ORDER BY transactionDate DESC;
 
 DROP TABLE #DayOfMonthAvgs;
