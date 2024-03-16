@@ -107,12 +107,8 @@ FROM
 		CAST(createdOn AS DATE) AS createdOn,
 		CASE
 			WHEN DATEPART(WEEKDAY, createdOn) = 1 THEN 'Sun'
-			WHEN DATEPART(WEEKDAY, createdOn) = 2 THEN 'Mon'
-			WHEN DATEPART(WEEKDAY, createdOn) = 3 THEN 'Tues'
+			WHEN DATEPART(WEEKDAY, createdOn) IN (2,3,5,6,7) THEN 'Mon-Tues,Thu-Sat'
 			WHEN DATEPART(WEEKDAY, createdOn) = 4 THEN 'Wed'
-			WHEN DATEPART(WEEKDAY, createdOn) = 5 THEN 'Thur'
-			WHEN DATEPART(WEEKDAY, createdOn) = 6 THEN 'Fri'
-			WHEN DATEPART(WEEKDAY, createdOn) = 7 THEN 'Sat'
 			ELSE 'NULL'
 		END as day_of_week,
 		COUNT(ID) as IDCount
@@ -134,12 +130,8 @@ SELECT
 	CAST(createdOn AS DATE) AS createdOn,
 	CASE
 		WHEN DATEPART(WEEKDAY, createdOn) = 1 THEN 'Sun'
-		WHEN DATEPART(WEEKDAY, createdOn) = 2 THEN 'Mon'
-		WHEN DATEPART(WEEKDAY, createdOn) = 3 THEN 'Tues'
+		WHEN DATEPART(WEEKDAY, createdOn) IN (2,3,5,6,7) THEN 'Mon-Tues,Thu-Sat'
 		WHEN DATEPART(WEEKDAY, createdOn) = 4 THEN 'Wed'
-		WHEN DATEPART(WEEKDAY, createdOn) = 5 THEN 'Thur'
-		WHEN DATEPART(WEEKDAY, createdOn) = 6 THEN 'Fri'
-		WHEN DATEPART(WEEKDAY, createdOn) = 7 THEN 'Sat'
 		ELSE 'NULL'
 	END as day_of_week,
 	COUNT(ID) as IDCount
@@ -151,19 +143,21 @@ ORDER BY CAST(createdOn AS DATE) DESC
 
 SELECT
 	#DetailInfo.createdOn,
+	#DetailInfo.day_of_week,
 	CAST(#WeeklyAverages.weeklyIDCountAvg as INT) as ExpectedResult,
 	ActualResult,
 	CAST(ABS(#WeeklyAverages.weeklyIDCountAvg - ActualResult) AS INT) as Deviation
 FROM #DetailInfo
 FULL OUTER JOIN #WeeklyAverages on #WeeklyAverages.day_of_week = #DetailInfo.day_of_week
 WHERE #DetailInfo.createdOn >= DATEADD(day, -365, GETDATE())
-GROUP BY #DetailInfo.createdOn, #WeeklyAverages.weeklyIDCountAvg, ActualResult
+GROUP BY #DetailInfo.createdOn, #DetailInfo.day_of_week, #WeeklyAverages.weeklyIDCountAvg, ActualResult
 ORDER BY #DetailInfo.createdOn DESC;
 
 -- drop tables
 DROP TABLE #WeeklyAverages;
 DROP TABLE #DetailInfo;
 --------------------------------------------------------
+
 Create table #DailySnapshot(
 	SnapshotDate Date Primary key,
 	TotalRecords INT,
@@ -181,7 +175,7 @@ SELECT
 	COUNT(*),
 	COUNT(DISTINCT PRODUCTID),
 	COUNT(PartnerID)
-FROM BI_BDA_Partners;
+FROM BI_Feed.dbo.BI_BDA_Partners;
 
 SELECT 
 	CASE 
