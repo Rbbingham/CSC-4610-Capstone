@@ -133,3 +133,45 @@ FROM WeeklyAverages
 FULL OUTER JOIN DetailInfo ON WeeklyAverages.timespan = DetailInfo.timespan
 GROUP BY TransactionDate, DetailInfo.timespan, day_of_week, AverageResult, ActualResult
 ORDER BY TransactionDate DESC;
+
+----------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------
+-- COUNT(transactionReferenceId) as TransactionCount
+WITH dayOfMonthAvgs as (
+	SELECT 
+		day_of_month, 
+		AVG(TransactionCount) as AverageResult
+	FROM (
+		SELECT 
+			CAST(transactionDate as date) as transactionDate,
+			COUNT(transactionReferenceId) as transactionCount,
+			DATEPART(day, transactionDate) AS day_of_month
+		FROM BI_Feed.dbo.BI_PA_Transactions with (nolock)
+		WHERE TransactionDate >= DATEADD(day, -183, GETDATE())
+		GROUP BY CAST(transactionDate as date), DATEPART(day, transactionDate)
+		--ORDER BY CAST(transactionDate as date)
+		) AS subquery
+		GROUP BY day_of_month
+),
+DetailInfo as (
+	SELECT 
+			CAST(transactionDate as date) as transactionDate,
+			COUNT(transactionReferenceId) as transactionCount,
+			DATEPART(day, transactionDate) AS day_of_month
+	FROM BI_Feed.dbo.BI_PA_Transactions with (nolock)
+	WHERE TransactionDate >= DATEADD(day, -183, GETDATE())
+	GROUP BY CAST(transactionDate as date), DATEPART(day, transactionDate)
+	--ORDER BY CAST(transactionDate as date)
+)
+SELECT
+	transactionDate,
+	DetailInfo.day_of_month,
+	AverageResult as ExpectedResult,
+	transactionCount as ActualResult,
+	ABS(AverageResult - transactionCount) as Deviation
+FROM DetailInfo
+FULL OUTER JOIN dayOfMonthAvgs ON DetailInfo.day_of_month = dayOfMonthAvgs.day_of_month
+WHERE transactionDate >= DATEADD(day, -183, GETDATE())
+GROUP BY transactionDate, DetailInfo.day_of_month, AverageResult, transactionCount
+ORDER BY transactionDate DESC;
