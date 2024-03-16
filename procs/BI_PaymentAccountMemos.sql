@@ -1,4 +1,4 @@
-Use [CapstoneDB]
+USE [CapstoneDB]
 GO
 
 /******************************************************************************
@@ -11,10 +11,17 @@ GO
 
 ******************************************************************************/
 
-CREATE OR ALTER PROCEDURE [dbo].[BI_Health_PaymentAccountMemos]
-AS 
+CREATE OR ALTER PROCEDURE [dbo].[BI_Health_PaymentAccountMemos](
+	@DaysBefore int
+)
+AS
 BEGIN
 	SET NOCOUNT ON;
+
+	IF @DaysBefore > 0
+	BEGIN
+		RAISERROR('Warning: %s was passed %d > 0', 0, 0, 'DaysBefore', @DaysBefore)
+	END
 
 	-- create temp table
 	DECLARE @temp_BI_PaymentAccountMemos AS [dbo].[TnTech_TableType];
@@ -52,7 +59,7 @@ BEGIN
 		GROUP BY
 			CAST([CreatedOn] AS DATE)
 		HAVING
-			CAST([CreatedOn] AS DATE) >= DATEADD(DAY, -5, CAST(GETDATE() AS DATE))
+			CAST([CreatedOn] AS DATE) >= DATEADD(DAY, @DaysBefore, CAST(GETDATE() AS DATE))
 	) AS subquery
 	WHERE
 		Records = 0;
