@@ -138,40 +138,56 @@ ORDER BY TransactionDate DESC;
 ----------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------
 -- COUNT(transactionReferenceId) as TransactionCount
-WITH dayOfMonthAvgs as (
+CREATE TABLE #DayOfMonthAvgs (
+	day_of_month NVARCHAR(20),
+	transCountAvg INT
+);
+INSERT INTO #DayOfMonthAvgs
+SELECT 
+	day_of_month, 
+	AVG(TransactionCount) as transCountAvg
+FROM 
+(
 	SELECT 
-		day_of_month, 
-		AVG(TransactionCount) as AverageResult
-	FROM (
-		SELECT 
-			CAST(transactionDate as date) as transactionDate,
-			COUNT(transactionReferenceId) as transactionCount,
-			DATEPART(day, transactionDate) AS day_of_month
-		FROM BI_Feed.dbo.BI_PA_Transactions with (nolock)
-		WHERE TransactionDate >= DATEADD(day, -183, GETDATE())
-		GROUP BY CAST(transactionDate as date), DATEPART(day, transactionDate)
-		--ORDER BY CAST(transactionDate as date)
-		) AS subquery
-		GROUP BY day_of_month
-),
-DetailInfo as (
-	SELECT 
-			CAST(transactionDate as date) as transactionDate,
-			COUNT(transactionReferenceId) as transactionCount,
-			DATEPART(day, transactionDate) AS day_of_month
+		CAST(transactionDate as date) as transactionDate,
+		COUNT(transactionReferenceId) as transactionCount,
+		DATEPART(day, transactionDate) AS day_of_month
 	FROM BI_Feed.dbo.BI_PA_Transactions with (nolock)
 	WHERE TransactionDate >= DATEADD(day, -183, GETDATE())
 	GROUP BY CAST(transactionDate as date), DATEPART(day, transactionDate)
 	--ORDER BY CAST(transactionDate as date)
+) AS subquery
+GROUP BY day_of_month;
+
+
+CREATE TABLE #DetailInfo (
+	transactionDate DATE,
+	ActualResult INT,
+	day_of_month INT
 )
+
+INSERT INTO #DetailInfo
+SELECT 
+		CAST(transactionDate as date) as transactionDate,
+		COUNT(transactionReferenceId) as ActualResult,
+		DATEPART(day, transactionDate) AS day_of_month
+FROM BI_Feed.dbo.BI_PA_Transactions with (nolock)
+WHERE TransactionDate >= DATEADD(day, -183, GETDATE())
+GROUP BY CAST(transactionDate as date), DATEPART(day, transactionDate)
+--ORDER BY CAST(transactionDate as date)
+
+
 SELECT
 	transactionDate,
-	DetailInfo.day_of_month,
-	AverageResult as ExpectedResult,
-	transactionCount as ActualResult,
-	ABS(AverageResult - transactionCount) as Deviation
-FROM DetailInfo
-FULL OUTER JOIN dayOfMonthAvgs ON DetailInfo.day_of_month = dayOfMonthAvgs.day_of_month
+	#DetailInfo.day_of_month,
+	transCountAvg as ExpectedResult,
+	ActualResult,
+	ABS(transCountAvg - ActualResult) as Deviation
+FROM #DetailInfo
+FULL OUTER JOIN #DayOfMonthAvgs ON #DetailInfo.day_of_month = #DayOfMonthAvgs.day_of_month
 WHERE transactionDate >= DATEADD(day, -183, GETDATE())
-GROUP BY transactionDate, DetailInfo.day_of_month, AverageResult, transactionCount
+GROUP BY transactionDate, #DetailInfo.day_of_month, transCountAvg, ActualResult
 ORDER BY transactionDate DESC;
+
+DROP TABLE #DayOfMonthAvgs;
+DROP TABLE #DetailInfo;
