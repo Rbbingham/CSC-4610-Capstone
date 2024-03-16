@@ -163,3 +163,38 @@ ORDER BY #DetailInfo.createdOn DESC;
 -- drop tables
 DROP TABLE #WeeklyAverages;
 DROP TABLE #DetailInfo;
+--------------------------------------------------------
+Create table #DailySnapshot(
+	SnapshotDate Date Primary key,
+	TotalRecords INT,
+	DistinctProducts INT,
+	DistinctPartners INT
+	);
+
+INSERT INTO #DailySnapshot (
+	SnapshotDate,
+	TotalRecords,
+	DistinctProducts,
+	DistinctPartners)
+SELECT 
+	GETDATE(),
+	COUNT(*),
+	COUNT(DISTINCT PRODUCTID),
+	COUNT(PartnerID)
+FROM BI_BDA_Partners;
+
+SELECT 
+	CASE 
+		WHEN
+			a.TotalRecords = b.TotalRecords
+			AND a.DistinctProducts= b.DistinctProducts
+			AND a.DistinctPartners = b.DistinctPartners
+			THEN 'PASS'
+		ELSE 'FAIL'
+	END as TestResult
+FROM #DailySnapshot AS a
+	  JOIN #DailySnapshot b ON a.SnapshotDate = DATEADD(day,-1, b.SnapshotDate)
+WHERE 
+	a.SnapshotDate = CONVERT(date,GetDate());
+
+DROP TABLE #DailySnapShot
