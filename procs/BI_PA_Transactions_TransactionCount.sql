@@ -1,6 +1,6 @@
 /******************************************************************************
 	
-	CREATOR:Carlos Escudero & Harrison Peloquin
+	CREATOR: Carlos Escudero & Harrison Peloquin
 
 	CREATED: 3/17/24
 
@@ -122,23 +122,9 @@ BEGIN
 	WHERE transactionDate >= DATEADD(day, -183, GETDATE())
 	GROUP BY transactionDate, #DayOfMonthAvgs.day_of_month, #WeeklyAverages.timespan, transCountAvgMonth, transCountAvgWeek;
 
-	--Create temp table 
-	CREATE TABLE #temp_BI_PA_Transactions(
-		[TableName] varchar(256) NOT NULL,
-		[TestRunDate] date NOT NULL,
-		[TestName] varchar(256) NOT NULL,
-		[ActualResult] bigint NOT NULL,
-		[ExpectedResult] bigint NOT NULL,
-		[Deviation] bigint NOT NULL,
-		[CreatedOn] date NOT NULL,
-		[CreatedBy] varchar(256) NOT NULL,
-		[ModifiedOn] date NULL,
-		[ModifiedBy] varchar(256) NULL
-	);
-
 	-- run normal query into temp table
 	INSERT INTO 
-		#temp_BI_PA_Transactions( --temp table name
+		@temp_BI_PA_Transactions( --temp table name
 			TableName,
 			TestRunDate, 
 			TestName,
