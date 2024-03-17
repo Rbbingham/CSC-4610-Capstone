@@ -42,7 +42,6 @@ BEGIN
 		FROM BI_Feed.dbo.BI_PA_Transactions with (nolock)
 		WHERE TransactionDate >= DATEADD(day, -62, GETDATE())
 		GROUP BY CAST(transactionDate as date), DATEPART(day, transactionDate)
-		--ORDER BY CAST(transactionDate as date)
 	) AS subquery
 	GROUP BY day_of_month;
 
@@ -71,7 +70,6 @@ BEGIN
 		FROM BI_Feed.dbo.BI_PA_Transactions with (nolock)
 		WHERE TransactionDate >= DATEADD(day, -183, GETDATE())
 		GROUP BY CAST(transactionDate as date), DATEPART(WEEKDAY, transactionDate)
-		--ORDER BY CAST(transactionDate as date) DESC
 	) AS subquery
 	GROUP BY timespan;
 
