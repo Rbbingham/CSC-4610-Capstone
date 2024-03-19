@@ -49,16 +49,16 @@ BEGIN
 			ModifiedOn,
 			ModifiedBy)
 	SELECT
-		'BalancesSummary' AS TableName,
-		 CAST(GETDATE() AS DATE) AS TestRunDate,
-		'Product Id Number Count' AS TestName,
-		COUNT(DISTINCT productId) AS ActualResult,
+		'BalancesSummary' As TableName,
+		 CAST(GETDATE() As DATE) As TestRunDate,
+		'Product Id Number Count' As TestName,
+		COUNT(DISTINCT productId) As ActualResult,
 		1500 AS ExpectedResult,
-		(COUNT(DISTINCT productId) - 1500) AS Deviation,
-		CAST(GETDATE() AS DATE) AS CreatedOn,
-		'[CapstoneDB].[dbo].[BI_Health_BalancesSummary]' AS CreatedBy,
-		NULL AS ModifiedOn,
-		NULL AS ModifiedBy
+		(COUNT(DISTINCT productId) - 1500) As Deviation,
+		CAST(GETDATE() As DATE) As CreatedOn,
+		'[CapstoneDB].[dbo].[BI_Health_BalancesSummary]' As CreatedBy,
+		NULL As ModifiedOn,
+		NULL As ModifiedBy
 	FROM 
 		BI_Feed.dbo.BI_BDA_BalancesSummary with (nolock); -- choose table from BI_feed
 
