@@ -192,3 +192,24 @@ WHERE
 	a.SnapshotDate = CONVERT(date,GetDate());
 
 DROP TABLE #DailySnapShot
+
+SELECT * FROM [BI_Feed].[dbo].[BI_BDA_Partners];
+
+SELECT
+	CASE
+		WHEN (ABS(100 - YesterdaysCount) / YesterdaysCount) * 1000 > 2 THEN 'FAIL'
+		ELSE 'PASS'
+	END
+FROM (
+		SELECT
+			COUNT(createdOn) AS TodaysCount
+		FROM
+			[BI_Feed].[dbo].[BI_BDA_Partners]
+	) AS tb1, (
+		SELECT
+			COUNT(createdOn) AS YesterdaysCount
+		FROM
+			[BI_Feed].[dbo].[BI_BDA_Partners]
+		WHERE
+			CAST(createdOn AS DATE) < CAST(GETDATE() AS DATE)
+	) AS tb2;
