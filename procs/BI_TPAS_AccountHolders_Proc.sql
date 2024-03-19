@@ -40,7 +40,7 @@ BEGIN
 		1500000 AS ExpectedResult,
 		(COUNT(DISTINCT [Id]) - 1500000) AS Deviation,
 		CAST(GETDATE() AS DATE) AS CreatedOn,
-		'[CapstoneDB].[dbo].[BI_TPAS_AccountHolders]' AS CreatedBy,
+		'[CapstoneDB].[dbo].[BI_Health_AccountHolders]' AS CreatedBy,
 		NULL AS ModifiedOn,
 		NULL AS ModifiedBy
 	FROM 
