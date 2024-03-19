@@ -197,7 +197,7 @@ SELECT * FROM [BI_Feed].[dbo].[BI_BDA_Partners];
 
 SELECT
 	CASE
-		WHEN (ABS(100 - YesterdaysCount) / YesterdaysCount) * 1000 > 2 THEN 'FAIL'
+		WHEN ((CAST(ABS((TodaysCount + 10) - YesterdaysCount) AS FLOAT) / CAST(YesterdaysCount AS FLOAT)) * 1000) >= 2 THEN 'FAIL'
 		ELSE 'PASS'
 	END
 FROM (
