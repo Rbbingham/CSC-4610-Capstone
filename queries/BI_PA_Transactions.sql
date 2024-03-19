@@ -379,7 +379,7 @@ FROM #DetailInfo
 FULL OUTER JOIN #DayOfMonthAvgs ON #DetailInfo.day_of_month = #DayOfMonthAvgs.day_of_month
 FULL OUTER JOIN #WeeklyAverages ON #DetailInfo.timespan = #WeeklyAverages.timespan
 FULL OUTER JOIN #ExpectedCalculator ON #ExpectedCalculator.Createdon = #DetailInfo.Createdon
-WHERE #DetailInfo.Createdon >= DATEADD(day, -180, CAST(GETDATE() AS DATE))
+WHERE #DetailInfo.Createdon >= DATEADD(day, -1, CAST(GETDATE() AS DATE))
 GROUP BY #DetailInfo.Createdon, ExpectedResult, ActualResult
 ORDER BY Createdon DESC;
 
