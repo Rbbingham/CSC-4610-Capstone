@@ -193,11 +193,12 @@ WHERE
 
 DROP TABLE #DailySnapShot
 
-SELECT * FROM [BI_Feed].[dbo].[BI_BDA_Partners];
+DECLARE @Threshold int;
+SET @Threshold = 2;
 
 SELECT
 	CASE
-		WHEN ((CAST(ABS((TodaysCount + 10) - YesterdaysCount) AS FLOAT) / CAST(YesterdaysCount AS FLOAT)) * 1000) >= 2 THEN 'FAIL'
+		WHEN ((CAST(ABS(TodaysCount - YesterdaysCount) AS FLOAT) / CAST(YesterdaysCount AS FLOAT)) * 1000) >= @Threshold THEN 'FAIL'
 		ELSE 'PASS'
 	END
 FROM (
