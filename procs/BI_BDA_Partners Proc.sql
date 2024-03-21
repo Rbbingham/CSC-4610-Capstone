@@ -56,22 +56,21 @@ BEGIN
 		'[CapstoneDB].[dbo].[BI_Health_BI_BDA_Partners]' AS CreatedBy,
 		NULL AS ModifiedOn,
 		NULL AS ModifiedBy
-	FROM 
-		(
-		
+	FROM (
 		SELECT
 			COUNT(createdOn) AS ExpectedResult
 		FROM
 			[BI_Feed].[dbo].[BI_BDA_Partners] with (nolock)
 		WHERE
 			CAST(createdOn AS DATE) < CAST(GETDATE() AS DATE)
-	) AS tb1,
-
-	(Select
-		Count(CreatedOn) as ActualResult
-	From[BI_Feed].[dbo].[BI_BDA_Partners] with (nolock)
-	WHERE
-			CAST(createdOn AS DATE) <= CAST(GETDATE() AS DATE)) as tb2; -- choose table from BI_feed
+	) AS tb1, (
+		SELECT
+			Count(CreatedOn) as ActualResult
+		FROM
+			[BI_Feed].[dbo].[BI_BDA_Partners] with (nolock)
+		WHERE
+			CAST(createdOn AS DATE) <= CAST(GETDATE() AS DATE)
+	) as tb2;
 
 	--Upload data into CapstoneDB.dbo.BI_HealthResults
 	EXEC [dbo].[BI_InsertTestResult]@Table = @temp_BI_BDA_Partners
