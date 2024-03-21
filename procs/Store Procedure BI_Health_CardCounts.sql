@@ -1,3 +1,6 @@
+USE [CapstoneDB]
+GO
+
 /******************************************************************************
 	
 	CREATOR:	Lorenzo Abellanosa
@@ -8,36 +11,16 @@
 
 ******************************************************************************/
 
-USE [CapstoneDB]
-GO
-
 CREATE OR ALTER PROCEDURE [dbo].[BI_Health_CardCounts]
 AS 
 BEGIN
 	SET NOCOUNT ON;
 
-	IF OBJECT_ID('tempdb.dbo.#temp_CardCounts') IS NOT NULL
-	BEGIN
-		DROP TABLE #temp_CardCounts
-	END;
-
-	-- Create temp table 
-	CREATE TABLE #temp_CardCounts(
-		[TableName] varchar(256) NOT NULL,
-		[TestRunDate] date NOT NULL,
-		[TestName] varchar(256) NOT NULL,
-		[ActualResult] bigint NOT NULL,
-		[ExpectedResult] bigint NOT NULL,
-		[Deviation] bigint NOT NULL,
-		[CreatedOn] date NOT NULL,
-		[CreatedBy] varchar(256) NOT NULL,
-		[ModifiedOn] date NULL,
-		[ModifiedBy] varchar(256) NULL
-	);
-
+	DECLARE @temp_CardCounts AS [dbo].[TnTech_TableType];
+	
 	-- run normal query into temp table
 	INSERT INTO 
-		#temp_CardCounts(
+		@temp_CardCounts(
 			TableName,
 			TestRunDate, 
 			TestName,
@@ -63,33 +46,7 @@ BEGIN
 		BI_Feed.dbo.CardCounts with (nolock); --choose table from BI_feed
 
 	--Upload data into CapstoneDB.dbo.BI_HealthResults
-	INSERT INTO 
-		CapstoneDB.dbo.BI_HealthResults(
-			TableName,
-			TestRunDate, 
-			TestName,
-			ActualResult,
-			ExpectedResult,
-			Deviation,
-			CreatedOn,
-			CreatedBy,
-			ModifiedOn,
-			ModifiedBy)
-	SELECT
-		TableName,
-		TestRunDate, 
-		TestName,
-		ActualResult,
-		ExpectedResult,
-		Deviation,
-		CreatedOn,
-		CreatedBy,
-		ModifiedOn,
-		ModifiedBy
-	FROM 
-		#temp_CardCounts;
-
-	DROP TABLE #temp_CardCounts;
+	EXEC [dbo].[BI_InsertTestResult] @Table = @temp_CardCounts;
 
 	SET NOCOUNT OFF;
 END;

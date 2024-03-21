@@ -1,3 +1,6 @@
+USE [CapstoneDB]
+GO
+
 /******************************************************************************
 	
 	CREATOR: Harrison Peloquin
@@ -10,32 +13,13 @@
 
 ******************************************************************************/
 
-Use [CapstoneDB]
-GO
-
-CREATE OR ALTER PROCEDURE [dbo].[BI_Health_BI_Call_Detail] -- name of the procedure
+CREATE OR ALTER PROCEDURE [dbo].[BI_Health_BI_Call_Detail]
 AS 
 BEGIN
     SET NOCOUNT ON;
 
-    IF OBJECT_ID('tempdb.dbo.temp_BI_Call_Detail') IS NOT NULL
-    BEGIN
-        DROP TABLE #temp_BI_Call_Detail; -- temp table
-    END;
-
-    -- Create temp table 
-    CREATE TABLE #temp_BI_Call_Detail (
-        [TableName] varchar(256) NOT NULL,
-        [TestRunDate] date NOT NULL,
-        [TestName] varchar(256) NOT NULL,
-        [ActualResult] bigint NOT NULL,
-        [ExpectedResult] bigint NOT NULL,
-        [Deviation] bigint NOT NULL,
-        [CreatedOn] date NOT NULL,
-        [CreatedBy] varchar(256) NOT NULL,
-        [ModifiedOn] date NULL,
-        [ModifiedBy] varchar(256) NULL
-    );
+    -- create temp table 
+	DECLARE @temp_BI_Call_Detail AS [dbo].[TnTech_TableType];
 
     -- CTE
     WITH WeeklyAverages AS (
@@ -74,8 +58,8 @@ BEGIN
         GROUP BY DATEPART(WEEKDAY, connectTime), CAST(connectTime AS DATE)
     )
 
-    -- Insert into temp table from the CTE and subsequent SELECT statement
-    INSERT INTO #temp_BI_Call_Detail (
+    -- insert into temp table from the CTE and subsequent SELECT statement
+    INSERT INTO @temp_BI_Call_Detail(
         TableName,
         TestRunDate, 
         TestName,
@@ -107,36 +91,8 @@ BEGIN
     GROUP BY connectTime, DetailInfo.timespan, day_of_week, AverageResult, ActualResult
     ORDER BY connectTime DESC;
 
-	
-
-	--Upload data into CapstoneDB.dbo.BI_HealthResults
-	INSERT INTO 
-		CapstoneDB.dbo.BI_HealthResults(
-			TableName,
-			TestRunDate, 
-			TestName,
-			ActualResult,
-			ExpectedResult,
-			Deviation,
-			CreatedOn,
-			CreatedBy,
-			ModifiedOn,
-			ModifiedBy)
-	SELECT
-		TableName,
-		TestRunDate, 
-		TestName,
-		ActualResult,
-		ExpectedResult,
-		Deviation,
-		CreatedOn,
-		CreatedBy,
-		ModifiedOn,
-		ModifiedBy
-	FROM 
-		#temp_BI_Call_Detail; --temp table 
-
-	DROP TABLE #temp_BI_Call_Detail;
+	-- upload data into CapstoneDB.dbo.BI_HealthResults
+	EXEC [dbo].[BI_InsertTestResult] @Table = @temp_BI_Call_Detail; 
 
 	SET NOCOUNT OFF;
 END;

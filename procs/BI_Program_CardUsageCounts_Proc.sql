@@ -1,3 +1,6 @@
+USE [CapstoneDB]
+GO
+
 /******************************************************************************
 	
 	CREATOR:	Carlos Escudero
@@ -7,9 +10,6 @@
 	PURPOSE:	Program ID Count Procedure.
 
 ******************************************************************************/
-
-USE [CapstoneDB]
-GO
 
 CREATE OR ALTER PROCEDURE [dbo].[BI_Health_BI_Program_CardUsageCounts]
 AS 

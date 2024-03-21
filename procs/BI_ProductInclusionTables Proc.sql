@@ -1,3 +1,6 @@
+USE [CapstoneDB]
+GO
+
 /******************************************************************************
 	
 	CREATOR:	Carlos Escudero
@@ -7,9 +10,6 @@
 	PURPOSE:	Merchant Group & ProductID Count Test.
 
 ******************************************************************************/
-
-USE [CapstoneDB]
-GO
 
 CREATE OR ALTER PROCEDURE [dbo].[BI_Health_BI_ProductInclusionTables]
 AS 
