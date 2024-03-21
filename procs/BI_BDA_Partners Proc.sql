@@ -27,6 +27,7 @@ BEGIN
 			ActualResult,
 			ExpectedResult,
 			Deviation,
+			RiskScore,
 			CreatedOn,
 			CreatedBy,
 			ModifiedOn,
@@ -38,6 +39,19 @@ BEGIN
 		ActualResult,
 		ExpectedResult,
 		ABS(ExpectedResult-ActualResult) as Deviation,
+		CASE
+			WHEN ABS(ExpectedResult-ActualResult) = 0 then 0
+			WHEN ABS(ExpectedResult-ActualResult) > 0 AND ABS(ExpectedResult-ActualResult) <= 2 THEN 1
+			WHEN ABS(ExpectedResult-ActualResult) > 2 AND ABS(ExpectedResult-ActualResult) <= 4 THEN 2
+			WHEN ABS(ExpectedResult-ActualResult) > 4 AND ABS(ExpectedResult-ActualResult) <= 6 THEN 3
+			WHEN ABS(ExpectedResult-ActualResult) > 6 AND ABS(ExpectedResult-ActualResult) <= 8 THEN 4
+			WHEN ABS(ExpectedResult-ActualResult) > 8 AND ABS(ExpectedResult-ActualResult) <= 10 THEN 5
+			WHEN ABS(ExpectedResult-ActualResult) > 10 AND ABS(ExpectedResult-ActualResult) <= 12 THEN 6
+			WHEN ABS(ExpectedResult-ActualResult) > 12 AND ABS(ExpectedResult-ActualResult) <= 14 THEN 7
+			WHEN ABS(ExpectedResult-ActualResult) > 14 AND ABS(ExpectedResult-ActualResult) <= 16 THEN 8
+			WHEN ABS(ExpectedResult-ActualResult) > 16 AND ABS(ExpectedResult-ActualResult) <= 18 THEN 9
+			ELSE 10
+		END as RiskScore,
 		CAST(GETDATE() AS DATE) AS CreatedOn,
 		'[CapstoneDB].[dbo].[BI_Health_BI_BDA_Partners]' AS CreatedBy,
 		NULL AS ModifiedOn,
