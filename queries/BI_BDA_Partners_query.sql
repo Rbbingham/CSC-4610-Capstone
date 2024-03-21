@@ -39,7 +39,7 @@ FROM
 	FROM BI_Feed.dbo.BI_BDA_Partners
 	WHERE createdOn >= DATEADD(day, -365, CAST(GETDATE() AS DATE))
 	GROUP BY CAST(createdOn AS DATE), DATEPART(WEEKDAY, createdOn)
-	--ORDER BY CAST(createdOn AS DATE) DESC
+	ORDER BY CAST(createdOn AS DATE) DESC
 ) as subquery
 GROUP BY day_of_week;
 
@@ -198,14 +198,14 @@ SELECT * FROM [BI_Feed].[dbo].[BI_BDA_Partners];
 ---------------------------------------------------------------------
 
 DECLARE @Threshold int;
-SET @Threshold = 2;
+SET @Threshold = 6;
 
 
 SELECT
 	CASE
 		WHEN ((CAST(ABS(TodaysCount - YesterdaysCount) AS FLOAT) / CAST(YesterdaysCount AS FLOAT)) * 1000) >= @Threshold THEN 'FAIL'
 		ELSE 'PASS'
-	END
+	END as Status
 FROM (
 		SELECT
 			COUNT(createdOn) AS TodaysCount
@@ -219,3 +219,35 @@ FROM (
 		WHERE
 			CAST(createdOn AS DATE) < CAST(GETDATE() AS DATE)
 	) AS tb2;
+
+------------------------------------------------------------------
+--Current working Idea for test
+
+DECLARE @Threshold int;
+SET @Threshold = 6;
+
+
+SELECT
+	'BI_BDA_Partners' AS TableName,
+	CAST(GETDATE() AS DATE) AS TestRunDate,
+	'Partner Count Check' AS TestName,
+	ExpectedResult,
+	ActualResult,
+	ABS(ExpectedResult-ActualResult) as Deviation,
+	'[CapstoneDB].[dbo].[You know this]'as CreatedBy
+FROM (
+		
+		SELECT
+			COUNT(createdOn) AS ExpectedResult
+		FROM
+			[BI_Feed].[dbo].[BI_BDA_Partners]
+		WHERE
+			CAST(createdOn AS DATE) < CAST(GETDATE() AS DATE)
+	) AS tb1,
+
+	(Select
+		Count(CreatedOn) as ActualResult
+	From[BI_Feed].[dbo].[BI_BDA_Partners]
+	WHERE
+			CAST(createdOn AS DATE) <= CAST(GETDATE() AS DATE)) as tb2;
+
