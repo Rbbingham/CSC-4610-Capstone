@@ -194,7 +194,7 @@ WHERE
 DROP TABLE #DailySnapShot
 
 SELECT * FROM [BI_Feed].[dbo].[BI_BDA_Partners];
-
+---------------------------------------------------------------------
 SELECT
 	CASE
 		WHEN (ABS(100 - YesterdaysCount) / YesterdaysCount) * 1000 > 2 THEN 'FAIL'

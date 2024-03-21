@@ -154,7 +154,7 @@ BEGIN
 		ExpectedResult,
 		ABS(ExpectedResult - ActualResult) as Deviation,
 		CAST(GETDATE() AS DATE) AS CreatedOn,
-		'[CapstoneDB].[dbo].[BI_Health_BI_PA_Transactions_UniquePaymentCount]' AS CreatedBy,
+		'[CapstoneDB].[dbo].[BI_Health_BI_PA_Transactions_DistinctPaymentCount]' AS CreatedBy,
 		NULL AS ModifiedOn,
 		NULL AS ModifiedBy
 	FROM #DetailInfo
