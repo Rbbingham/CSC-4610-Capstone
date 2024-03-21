@@ -1,60 +1,48 @@
--- TODO: Replace AccountNumber with productId
-SELECT 
-	CAST(CreatedOn AS DATE) as CreatedOnDate,
-	COUNT(productId) as NumProductID
-FROM BI_Feed.dbo.BI_BDA_Balances WITH (nolock) 
-WHERE CAST(CreatedOn AS DATE) > '2024-03-04'
-GROUP BY CAST(CreatedOn AS DATE) 
-ORDER BY CAST(CreatedOn AS DATE) DESC;
+USE [CapstoneDB]
+GO
 
-SELECT CreatedOn, balanceDate, productId, beginningBalance, endingBalance FROM BI_FEED.dbo.BI_BDA_Balances WITH (nolock);
+CREATE OR ALTER PROCEDURE [dbo].[BI_Health_BI_BDA_Balances]
+AS 
+BEGIN
+	SET NOCOUNT ON;
+	-- create temp table 
+	DECLARE @temp_BI_BDA_Balances AS [dbo].[TnTech_TableType];
+	-- TODO: Replace AccountNumber with productId
+	DECLARE @ExpectedResultTemp BIGINT;
 
-
-WITH Weekly_Averages AS (
-	SELECT 
-		timespan, 
-		AVG(numProductID) as AverageResult
-	FROM (
-		SELECT
-			CAST(CreatedOn as DATE) as CreatedOn, 
-			DATEPART(day, CAST(createdOn as DATE)) as day_of_month, 
-			COUNT(productId) as numProductID,
-			CASE
-				WHEN DATEPART(WEEKDAY, CreatedOn) IN (1, 2,3,4,5,7) THEN 'Mon-Thurs, Sat'
-				WHEN DATEPART(WEEKDAY, CreatedOn) = 6 THEN 'Fri'
-				ELSE 'NULL'
-			END as timespan
-		FROM BI_Feed.dbo.BI_BDA_Balances WITH (nolock)
-		WHERE CAST(CreatedOn AS DATE) >= '2024-01-01'
-		GROUP BY DATEPART(Weekday, CreatedOn), CAST(CreatedOn as date)
-) as subquery
-GROUP BY timespan)
-,
-DetailInfo AS (
+	SET @ExpectedResultTemp = (SELECT COUNT(productId)
+			FROM BI_Feed.dbo.BI_BDA_Balances WITH (nolock) 
+			WHERE CAST(CreatedOn AS DATE) = DATEADD(day, -1, CAST(GETDATE() AS DATE)))
+	 -- run normal query into temp table
+	INSERT INTO 
+		@temp_BI_BDA_Balances(
+			TableName,
+			TestRunDate, 
+			TestName,
+			ActualResult,
+			ExpectedResult,
+			Deviation,
+			CreatedOn,
+			CreatedBy,
+			ModifiedOn,
+			ModifiedBy)
 	SELECT
-			CAST(CreatedOn as DATE) as CreatedOn, 
-			DATEPART(day, CAST(createdOn as DATE)) as day_of_month, 
-			COUNT(productId) as ActualResult,
-			CASE
-				WHEN DATEPART(WEEKDAY, CreatedOn) IN (1, 2,3,4,5,7) THEN 'Mon-Thurs, Sat'
-				WHEN DATEPART(WEEKDAY, CreatedOn) = 6 THEN 'Fri'
-				ELSE 'NULL'
-			END as timespan
-		FROM BI_Feed.dbo.BI_BDA_Balances WITH (nolock)
-		WHERE CAST(CreatedOn AS DATE) >= '2024-01-01'
-		GROUP BY DATEPART(Weekday, CreatedOn), CAST(CreatedOn as date)
-)
-SELECT
-	CreatedOn,
-	DetailInfo.timespan,
-	day_of_month,
-	AverageResult as ExpectedResult,
-	ActualResult,
-	CASE
-		WHEN ActualResult <= AverageResult THEN AverageResult - ActualResult
-		WHEN ActualResult > AverageResult THEN ActualResult - AverageResult
-	END as Deviation
-	FROM Weekly_Averages
-FULL OUTER JOIN DetailInfo ON Weekly_Averages.timespan = DetailInfo.timespan
-GROUP BY CreatedOn, DetailInfo.timespan, day_of_month, AverageResult, ActualResult
-ORDER BY CreatedOn DESC;
+		'BI_BDA_Balances' as TableName,
+		CAST(GETDATE() AS DATE) as TestRunDate,
+		'Balances Product Count' as TestName,
+		COUNT(productId) as ActualResult,
+		@ExpectedResultTemp as ExpectedResult,
+		COUNT(productId) - @ExpectedResultTemp as Deviation,
+		CAST(GETDATE() AS DATE) AS CreatedOn,
+		'[CapstoneDB].[dbo].[BI_Health_BI_BDA_Institutions]' AS CreatedBy,
+		NULL AS ModifiedOn,
+		NULL AS ModifiedBy
+	FROM BI_Feed.dbo.BI_BDA_Balances WITH (nolock) 
+	WHERE CAST(CreatedOn AS DATE) = CAST(GETDATE() AS DATE);
+
+--  upload data into CapstoneDB.dbo.BI_HealthResults
+	EXEC [dbo].[BI_InsertTestResult] @Table = @temp_BI_BDA_Balances;
+
+	SET NOCOUNT OFF;
+END;
+GO
