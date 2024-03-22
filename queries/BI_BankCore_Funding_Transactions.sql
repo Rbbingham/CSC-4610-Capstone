@@ -2,7 +2,15 @@ use BI_Feed;
 
 select Count(ModifedOnDate) as Amount from dbo.BI_BankCore_Funding_Transactions with (nolock);
 --where ModifedOnDate = CAST(DATEADD(day, -1, GETDATE()) as DATE);
-------------------------------------------------------------------------------------------------------
+
+select CAST(createdOn as DATE), count(ModifedOnDate) from dbo.BI_BankCore_Funding_Transactions with (nolock)
+group by CAST(createdOn as DATE)
+order by CAST(createdOn as DATE) DESC;
+
+
+
+
+/*------------------------------------------------------------------------------------------------------
 SELECT
 	timespan,
 	AVG(modifiedCount)
@@ -52,3 +60,4 @@ group by timespan;
 		GROUP BY DATEPART(Weekday, transactionDate), CAST(transactionDate as date)
 		) AS subquery
 		GROUP BY timespan
+	*/
