@@ -81,11 +81,11 @@ SELECT
 	'BI_BDA_TransactionsSummary' as TableName,
 	CAST(GETDATE() AS DATE) as TestRunDate,
 	'Transaction Amount Sum Check' AS TestName,
-	#SummaryCalculation.CreatedOn as CreatedOn,
 	SummarySum as ActualAmount,
 	TransactionSum as ExpectedAmount,
 	ROUND(ABS(SummarySum - TransactionSum), 2) as Deviation,
 	NULL AS RiskScore,
+	CAST(GETDATE() AS DATE) AS CreatedOn,
 	'[CapstoneDB].[dbo].[BI_Health_BI_BDA_TransactionsSummary]' AS CreatedBy,
 	NULL AS ModifiedOn,
 	NULL AS ModifiedBy
