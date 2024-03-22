@@ -1,11 +1,12 @@
 SELECT *
 FROM [BI_Feed].[dbo].[BI_BDA_TransactionsSummary] with (nolock)
+where productId is NUll
 
 Select
 	CAST(CreatedOn as DATE) as CreatedOn,
 	SUM(sumTransactionAmount) as TransactionSum 
 FROM [BI_Feed].[dbo].[BI_BDA_TransactionsSummary] with (nolock)
-WHERE CAST(CreatedOn as DATE) = CAST(GETDATE() - 1 AS DATE)
+WHERE CAST(CreatedOn as DATE) = CAST(GETDATE() AS DATE) 
 GROUP BY CAST(CreatedOn as DATE)
 ORDER BY CAST(CreatedOn as DATE) DESC;
 -----------------------------------------------------
@@ -15,12 +16,17 @@ ORDER BY CAST(CreatedOn as DATE) DESC;
 select CAST(CreatedOn as DATE) as CreatedOn, 
 	SUM(transactionAmount)
 FROM [BI_Feed].[dbo].[BI_BDA_Transactions] with (nolock)
-Where CAST(CreatedOn as DATE) = CAST(GETDATE() - 1 AS DATE)
+Where CAST(CreatedOn as DATE) = CAST(GETDATE()  AS DATE) AND adminNumber is NOT NUll
 Group by CAST(CreatedOn as DATE)
 ORDER BY CAST(CreatedOn as DATE) DESC
 
-SELECT * 
+SELECT	id,
+		createdOn,
+		TranId,
+		adminNumber, 
+		transactionAmount
 FROM [BI_Feed].[dbo].[BI_BDA_Transactions]
+where adminNumber is Null
 
 
 Select * from [CapstoneDB].[dbo].[BI_HealthResults]
