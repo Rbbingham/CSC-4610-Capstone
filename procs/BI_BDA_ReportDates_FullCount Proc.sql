@@ -7,11 +7,11 @@ GO
 
 	CREATED:	2024/03/22
 
-	PURPOSE:	Ensures that 1 record is available from the previous day.
+	PURPOSE:	Ensures that every record is available.
 
 ******************************************************************************/
 
-CREATE OR ALTER PROCEDURE [dbo].[BI_Health_BI_BDA_ReportDates]
+CREATE OR ALTER PROCEDURE [dbo].[BI_Health_BI_BDA_ReportDates_FullCount]
 AS 
 BEGIN
 	SET NOCOUNT ON;
@@ -35,18 +35,16 @@ BEGIN
 	SELECT
 		'BI_BDA_ReportDates' AS TableName,
 		 CAST(GETDATE() AS DATE) AS TestRunDate,
-		'Report Count' AS TestName,
+		'Full Count' AS TestName,
 		COUNT(id) AS ActualResult,
-		1 AS ExpectedResult,
-		(COUNT(id) - 1) AS Deviation,
+		DATEDIFF(DAY, CONVERT(DATE, '2016-12-31'), CAST(GETDATE() AS DATE)) AS ExpectedResult,
+		(COUNT(id) - DATEDIFF(DAY, CONVERT(DATE, '2016-12-31'), CAST(GETDATE() AS DATE))) AS Deviation,
 		CAST(GETDATE() AS DATE) AS CreatedOn,
-		'[CapstoneDB].[dbo].[BI_Health_BI_BDA_ReportDates]' AS CreatedBy,
+		'[CapstoneDB].[dbo].[BI_Health_BI_BDA_ReportDates_FullCount]' AS CreatedBy,
 		NULL AS ModifiedOn,
 		NULL AS ModifiedBy
 	FROM 
 		BI_Feed.dbo.BI_BDA_ReportDates with (nolock) --choose table from BI_feed
-	WHERE
-		reportDate = CAST(DATEADD(day, -1, GETDATE()) AS DATE);
 	-- upload data into CapstoneDB.dbo.BI_HealthResults
 	EXEC [dbo].[BI_InsertTestResult] @Table = @temp_BI_BDA_ReportDates;
 
