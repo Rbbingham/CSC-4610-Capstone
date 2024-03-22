@@ -21,16 +21,12 @@ FROM (
 		DATEPART(Weekday, createdOn) AS day_of_week,
 		CASE
 			WHEN DATEPART(DAY, CAST(createdOn as DATE)) = 1 THEN 'FirstofMonth'
-			WHEN DATEPART(WEEKDAY, createdOn) = 1 THEN 'Sun'
-			WHEN DATEPART(WEEKDAY, createdOn) = 2 THEN 'Mon'
-			WHEN DATEPART(WEEKDAY, createdOn) = 3 THEN 'Tues'
-			WHEN DATEPART(WEEKDAY, createdOn) = 4 THEN 'Wed'
-			WHEN DATEPART(WEEKDAY, createdOn) = 5 THEN 'Thu'
-			WHEN DATEPART(WEEKDAY, createdOn) = 6 THEN 'Fri'
+			WHEN DATEPART(WEEKDAY, createdOn) in (1,2,3,4,5,6) THEN 'Sun-Fri'
 			WHEN DATEPART(WEEKDAY, createdOn) = 7 THEN 'Sat'
 			ELSE 'NULL'
 		END as timespan
 	from BI_Feed.dbo.BI_BankCore_Funding_Transactions with (nolock)
+	where CreatedOn >= DATEADD(day, -183, GETDATE())
 	group by DATEPART(Weekday, createdOn), CAST(createdOn as DATE)
 ) as subquery
 group by timespan;
