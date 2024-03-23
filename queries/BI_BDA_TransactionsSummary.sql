@@ -149,7 +149,7 @@ FROM
 		END as day_of_month,
 		COUNT(ID) as IDCount
 	FROM BI_Feed.dbo.BI_BDA_TransactionsSummary WITH (nolock)
-	WHERE createdOn >= DATEADD(day, -183, GETDATE())
+	WHERE createdOn >= DATEADD(day, -62, GETDATE())
 	GROUP BY CAST(createdOn AS DATE)
 ) AS subquery
 GROUP BY day_of_month;
@@ -198,26 +198,24 @@ FULL OUTER JOIN #DayOfMonthAverages on #DayOfMonthAverages.day_of_month = #Detai
 WHERE CreatedOn >= DATEADD(day, -183, GETDATE())
 GROUP BY CreatedOn, #DayOfMonthAverages.day_of_month, dayofMonthIDCountAvg, weekIDCountAvg;
 
-
 SELECT
-	--'BI_BDA_TransactionsSummary' as TableName,
-	--CAST(GETDATE() AS DATE) as TestRunDate,
-	--'Transaction Amount Sum Check' AS TestName,
-	#DetailInfo.CreatedOn,
+	'BI_BDA_TransactionsSummary' as TableName,
+	CAST(GETDATE() AS DATE) as TestRunDate,
+	'Record Count' AS TestName,
 	IDCount as ActualResult,
 	ExpectedResult,
-	ABS(IDCount - weekIDCountAvg) as Deviation
-	--NULL AS RiskScore,
-	--CAST(GETDATE() AS DATE) AS CreatedOn,
-	--'[CapstoneDB].[dbo].[BI_Health_BI_BDA_TransactionsSummary]' AS CreatedBy,
-	--NULL AS ModifiedOn,
-	--NULL AS ModifiedBy
+	ABS(IDCount - ExpectedResult) as Deviation,
+	NULL AS RiskScore,
+	CAST(GETDATE() AS DATE) AS CreatedOn,
+	'[CapstoneDB].[dbo].[BI_Health_BI_BDA_TransactionsSummary]' AS CreatedBy,
+	NULL AS ModifiedOn,
+	NULL AS ModifiedBy
 FROM #DetailInfo
 FULL OUTER JOIN #WeeklyAverages ON #DetailInfo.day_of_week = #WeeklyAverages.day_of_week
 FULL OUTER JOIN #DayOfMonthAverages ON #DetailInfo.day_of_month = #DayOfMonthAverages.day_of_month
 FULL OUTER JOIN #ExpectedCalculator ON #DetailInfo.CreatedOn = #ExpectedCalculator.CreatedOn
-WHERE CAST(#DetailInfo.CreatedOn as DATE) >= DATEADD(day, -183, CAST(GETDATE() AS DATE))
-GROUP BY CAST(#DetailInfo.CreatedOn as DATE), IDCount, weekIDCountAvg
+WHERE CAST(#DetailInfo.CreatedOn as DATE) = DATEADD(day, -1, CAST(GETDATE() AS DATE))
+GROUP BY CAST(#DetailInfo.CreatedOn as DATE), IDCount, ExpectedResult, weekIDCountAvg
 ORDER BY CAST(#DetailInfo.CreatedOn as DATE) DESC;
 
 DROP TABLE #WeeklyAverages;
