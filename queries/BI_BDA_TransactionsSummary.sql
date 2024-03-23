@@ -16,7 +16,7 @@ ORDER BY CAST(CreatedOn as DATE) DESC;
 select CAST(CreatedOn as DATE) as CreatedOn, 
 	SUM(transactionAmount)
 FROM [BI_Feed].[dbo].[BI_BDA_Transactions] with (nolock)
-Where CAST(CreatedOn as DATE) = CAST(GETDATE()  AS DATE) AND adminNumber is NOT NUll
+Where CAST(CreatedOn as DATE) = CAST(GETDATE()  AS DATE) AND transactionAmount is NOT NUll
 Group by CAST(CreatedOn as DATE)
 ORDER BY CAST(CreatedOn as DATE) DESC
 
@@ -26,7 +26,7 @@ SELECT	id,
 		adminNumber, 
 		transactionAmount
 FROM [BI_Feed].[dbo].[BI_BDA_Transactions]
-where adminNumber is Null
+where transactionAmount is not Null
 
 
 Select * from [CapstoneDB].[dbo].[BI_HealthResults]
