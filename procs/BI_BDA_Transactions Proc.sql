@@ -141,11 +141,11 @@ BEGIN
 			ActualResult,
 			ExpectedResult,
 			Deviation,
+			RiskScore,
 			CreatedOn,
 			CreatedBy,
 			ModifiedOn,
 			ModifiedBy)
-
 		-- Query selects necessary information to be put in table
 		SELECT
 			'BI_BDA_Transactions' AS TableName,
