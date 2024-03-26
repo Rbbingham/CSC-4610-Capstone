@@ -11,6 +11,7 @@ GO
 
 	MODIFICATIONS:		
 	2/19/2024	Collin Cunningham	Updated result table to BI_HealthResults
+	3/26/2024	Collin Cunningham	Added Risk Score column
 
 ******************************************************************************/
 
@@ -31,6 +32,7 @@ BEGIN
 			ActualResult,
 			ExpectedResult,
 			Deviation,
+			RiskScore,
 			CreatedOn,
 			CreatedBy,
 			ModifiedOn,
@@ -42,7 +44,8 @@ BEGIN
 		COUNT(DISTINCT [ProductId]) AS ActualResult,
 		2000 AS ExpectedResult,
 		(COUNT(DISTINCT [ProductId]) - 2000) AS Deviation,
-		CAST(GETDATE() AS DATE) AS CreatedOn,
+		NULL as RiskScore,
+		GETDATE() AS CreatedOn,
 		'[CapstoneDB].[dbo].[BI_Health_BI_MonthlyProductStats]' AS CreatedBy,
 		NULL AS ModifiedOn,
 		NULL AS ModifiedBy
