@@ -41,6 +41,7 @@ BEGIN
 				T1.ActualResult = T2.ActualResult,
 				T1.ExpectedResult = T2.ExpectedResult,
 				T1.Deviation = T2.Deviation,
+				T1.RiskScore = T2.RiskScore,
 				T1.ModifiedOn = GETDATE(),
 				T1.ModifiedBy = T1.TestName
 			FROM
@@ -65,6 +66,7 @@ BEGIN
 				ActualResult,
 				ExpectedResult,
 				Deviation,
+				RiskScore,
 				CreatedOn,
 				CreatedBy,
 				ModifiedOn,
@@ -76,6 +78,7 @@ BEGIN
 			ActualResult,
 			ExpectedResult,
 			Deviation,
+			RiskScore,
 			CreatedOn,
 			CreatedBy,
 			ModifiedOn,
