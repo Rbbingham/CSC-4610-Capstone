@@ -16,34 +16,18 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
-	IF OBJECT_ID('tempdb.dbo.#temp_BI_Program_CardUsageCounts') IS NOT NULL
-	BEGIN
-		DROP TABLE #temp_BI_Program_CardUsageCounts
-	END;
-
-	--Create temp table 
-	CREATE TABLE #temp_BI_Program_CardUsageCounts(
-		[TableName] varchar(256) NOT NULL,
-		[TestRunDate] date NOT NULL,
-		[TestName] varchar(256) NOT NULL,
-		[ActualResult] bigint NOT NULL,
-		[ExpectedResult] bigint NOT NULL,
-		[Deviation] bigint NOT NULL,
-		[CreatedOn] date NOT NULL,
-		[CreatedBy] varchar(256) NOT NULL,
-		[ModifiedOn] date NULL,
-		[ModifiedBy] varchar(256) NULL
-	);
+	DECLARE @temp_BI_Program_CardUsageCounts AS [dbo].[TnTech_TableType];
 
 	-- run normal query into temp table
 	INSERT INTO 
-		#temp_BI_Program_CardUsageCounts(
+		@temp_BI_Program_CardUsageCounts(
 			TableName,
 			TestRunDate, 
 			TestName,
 			ActualResult,
 			ExpectedResult,
 			Deviation,
+			RiskScore,
 			CreatedOn,
 			CreatedBy,
 			ModifiedOn,
@@ -55,7 +39,8 @@ BEGIN
 		COUNT(DISTINCT ProgramId) AS ActualResult,
 		3200 AS ExpectedResult,
 		(COUNT(DISTINCT ProgramId) - 3200) AS Deviation,
-		CAST(GETDATE() AS DATE) AS CreatedOn,
+		NULL AS RiskScore,
+		GETDATE() AS CreatedOn,
 		'[CapstoneDB].[dbo].[BI_Health_BI_Program_CardUsageCounts]' AS CreatedBy,
 		NULL AS ModifiedOn,
 		NULL AS ModifiedBy
@@ -63,33 +48,7 @@ BEGIN
 		BI_Feed.dbo.BI_Program_CardUsageCounts with (nolock); -- choose table from BI_feed
 
 	--Upload data into CapstoneDB.dbo.BI_HealthResults
-	INSERT INTO 
-		CapstoneDB.dbo.BI_HealthResults(
-			TableName,
-			TestRunDate, 
-			TestName,
-			ActualResult,
-			ExpectedResult,
-			Deviation,
-			CreatedOn,
-			CreatedBy,
-			ModifiedOn,
-			ModifiedBy)
-	SELECT
-		TableName,
-		TestRunDate, 
-		TestName,
-		ActualResult,
-		ExpectedResult,
-		Deviation,
-		CreatedOn,
-		CreatedBy,
-		ModifiedOn,
-		ModifiedBy
-	FROM 
-		#temp_BI_Program_CardUsageCounts;
-
-	DROP TABLE #temp_BI_Program_CardUsageCounts;
+	EXEC [dbo].[BI_InsertTestResult] @Table = @temp_BI_Program_CardUsageCounts;
 
 	SET NOCOUNT OFF;
 END;
