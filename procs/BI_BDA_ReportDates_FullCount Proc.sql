@@ -28,6 +28,7 @@ BEGIN
 			ActualResult,
 			ExpectedResult,
 			Deviation,
+			RiskScore,
 			CreatedOn,
 			CreatedBy,
 			ModifiedOn,
@@ -39,13 +40,15 @@ BEGIN
 		COUNT(id) AS ActualResult,
 		DATEDIFF(DAY, CONVERT(DATE, '2016-12-31'), CAST(GETDATE() AS DATE)) AS ExpectedResult,
 		(COUNT(id) - DATEDIFF(DAY, CONVERT(DATE, '2016-12-31'), CAST(GETDATE() AS DATE))) AS Deviation,
-		CAST(GETDATE() AS DATE) AS CreatedOn,
+		dbo.CalculateRiskScore(COUNT(id), DATEDIFF(DAY, CONVERT(DATE, '2016-12-31'), CAST(GETDATE() AS DATE))) AS RiskScore,
+		GETDATE() AS CreatedOn,
 		'[CapstoneDB].[dbo].[BI_Health_BI_BDA_ReportDates_FullCount]' AS CreatedBy,
 		NULL AS ModifiedOn,
 		NULL AS ModifiedBy
 	FROM 
 		BI_Feed.dbo.BI_BDA_ReportDates with (nolock) --choose table from BI_feed
 	-- upload data into CapstoneDB.dbo.BI_HealthResults
+
 	EXEC [dbo].[BI_InsertTestResult] @Table = @temp_BI_BDA_ReportDates;
 
 	SET NOCOUNT OFF;
