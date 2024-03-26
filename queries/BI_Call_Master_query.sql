@@ -9,11 +9,11 @@ ORDER BY CAST(localCallStartTime as date) DESC;
 -- Create a temporary table for weekly averages
 CREATE TABLE #WeeklyAverages (
 	day_of_week NVARCHAR(20),
-	weeklyIDCountAvg DECIMAL(18,2)
+	ExpectedResult INT
 );
 
 INSERT INTO #WeeklyAverages
-SELECT day_of_week, AVG(callIDCount) as weeklyIDCountAvg
+SELECT day_of_week, AVG(callIDCount) as ExpectedResult
 FROM
 (
 	SELECT
@@ -59,14 +59,21 @@ GROUP BY CAST(localCallStartTime AS DATE), DATEPART(WEEKDAY, localCallStartTime)
 
 -- Select query with deviations
 SELECT
-	#DetailInfo.localCallStartTime,
-	CAST(weeklyIDCountAvg as INT) as Expected,
+	'BI_Call_Master' AS TableName,
+	CAST(GETDATE() AS DATE) AS TestRunDate,
+	'Call Count' AS TestName,
 	ActualResult,
-	CAST(ABS(weeklyIDCountAvg - ActualResult) as INT) as Deviation
+	ExpectedResult,
+	ABS(ExpectedResult - ActualResult) as Deviation,
+	NULL as RiskScore,
+	GETDATE() AS CreatedOn,
+	'[CapstoneDB].[dbo].[BI_Health_BI_Call_Master]' AS CreatedBy,
+	NULL AS ModifiedOn,
+	NULL AS ModifiedBy
 FROM #DetailInfo
 FULL OUTER JOIN #WeeklyAverages on #WeeklyAverages.day_of_week = #DetailInfo.day_of_week
-WHERE #DetailInfo.localCallStartTime >= DATEADD(day, -365, GETDATE())
-GROUP BY #DetailInfo.localCallStartTime, weeklyIDCountAvg, ActualResult
+WHERE #DetailInfo.localCallStartTime = DATEADD(day, -2, CAST(GETDATE() as DATE))
+GROUP BY #DetailInfo.localCallStartTime, ExpectedResult, ActualResult
 ORDER BY #DetailInfo.localCallStartTime DESC;
 
 -- Drop temporary tables
