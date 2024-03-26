@@ -1,3 +1,5 @@
+USE CapstoneDB
+
 SELECT
 	CAST(localCallStartTime as date) as localCallStartTime, 
 	COUNT(callID) as callIDCount
@@ -65,7 +67,7 @@ SELECT
 	ActualResult,
 	ExpectedResult,
 	ABS(ExpectedResult - ActualResult) as Deviation,
-	NULL as RiskScore,
+	dbo.CalculateRiskScore(ActualResult, ExpectedResult) as RiskScore,
 	GETDATE() AS CreatedOn,
 	'[CapstoneDB].[dbo].[BI_Health_BI_Call_Master]' AS CreatedBy,
 	NULL AS ModifiedOn,
