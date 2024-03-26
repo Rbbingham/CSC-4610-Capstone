@@ -16,6 +16,8 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
+
+	--Create temp table 
 	DECLARE @temp_BI_ProductInclusionTables AS [dbo].[TnTech_TableType];
 
 	-- runs Merchant group test
@@ -60,6 +62,7 @@ BEGIN
 			CreatedBy,
 			ModifiedOn,
 			ModifiedBy)
+
 	SELECT
 		 'BI_ProductInclusionTables' AS TableName,
 		 CAST(GETDATE() AS DATE) AS TestRunDate,
@@ -74,6 +77,8 @@ BEGIN
 		NULL AS ModifiedBy
 	FROM 
 		BI_Feed.dbo.BI_ProductInclusionTables with (nolock); --choose table from BI_feed
+
+	--Upload data into CapstoneDB.dbo.BI_HealthResults
 
 	EXEC [dbo].[BI_InsertTestResult] @Table = @temp_BI_ProductInclusionTables;
 
