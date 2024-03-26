@@ -16,33 +16,19 @@ AS
 BEGIN
 	SET NOCOUNT ON;
 
-	IF OBJECT_ID('tempdb.dbo.#temp_BI_ProductInclusionTables') IS NOT NULL BEGIN
-		DROP TABLE #temp_BI_ProductInclusionTables
-	END;
-
 	--Create temp table 
-	CREATE TABLE #temp_BI_ProductInclusionTables(
-		[TableName] varchar(256) NOT NULL,
-		[TestRunDate] date NOT NULL,
-		[TestName] varchar(256) NOT NULL,
-		[ActualResult] bigint NOT NULL,
-		[ExpectedResult] bigint NOT NULL,
-		[Deviation] bigint NOT NULL,
-		[CreatedOn] date NOT NULL,
-		[CreatedBy] varchar(256) NOT NULL,
-		[ModifiedOn] date NULL,
-		[ModifiedBy] varchar(256) NULL
-	);
+	DECLARE @temp_BI_ProductInclusionTables AS [dbo].[TnTech_TableType];
 
 	-- runs Merchant group test
 	INSERT INTO 
-		#temp_BI_ProductInclusionTables(
+		@temp_BI_ProductInclusionTables(
 			TableName,
 			TestRunDate, 
 			TestName,
 			ActualResult,
 			ExpectedResult,
 			Deviation,
+			RiskScore,
 			CreatedOn,
 			CreatedBy,
 			ModifiedOn,
@@ -54,6 +40,7 @@ BEGIN
 		COUNT(DISTINCT MerchantGroup) AS ActualResult,
 		60 AS ExpectedResult,
 		(COUNT(DISTINCT MerchantGroup) - 60) AS Deviation,
+		Null as RiskScore,
 		CAST(GETDATE() AS DATE) AS CreatedOn,
 		'[CapstoneDB].[dbo].[BI_Health_BI_ProductInclusionTables]' AS CreatedBy,
 		NULL AS ModifiedOn,
@@ -62,7 +49,7 @@ BEGIN
 		BI_Feed.dbo.BI_ProductInclusionTables with (nolock); --choose table from BI_feed
 
 	INSERT INTO
-		#temp_BI_ProductInclusionTables--temp table name
+		@temp_BI_ProductInclusionTables--temp table name
 	SELECT
 		 'BI_ProductInclusionTables' AS TableName,
 		 CAST(GETDATE() AS DATE) AS TestRunDate,
@@ -70,6 +57,7 @@ BEGIN
 		COUNT(DISTINCT ProductID) AS ActualResult,
 		275 AS ExpectedResult,
 		(COUNT(DISTINCT ProductID) - 275) AS Deviation,
+		NULL as RiskScore,
 		CAST(GETDATE() AS DATE) AS CreatedOn,
 		'[CapstoneDB].[dbo].[BI_Health_BI_ProductInclusionTables]' AS CreatedBy,
 		NULL AS ModifiedOn,
@@ -78,33 +66,7 @@ BEGIN
 		BI_Feed.dbo.BI_ProductInclusionTables with (nolock); --choose table from BI_feed
 
 	--Upload data into CapstoneDB.dbo.BI_HealthResults
-	INSERT INTO 
-		CapstoneDB.dbo.BI_HealthResults(
-			TableName,
-			TestRunDate, 
-			TestName,
-			ActualResult,
-			ExpectedResult,
-			Deviation,
-			CreatedOn,
-			CreatedBy,
-			ModifiedOn,
-			ModifiedBy)
-	SELECT
-		TableName,
-		TestRunDate, 
-		TestName,
-		ActualResult,
-		ExpectedResult,
-		Deviation,
-		CreatedOn,
-		CreatedBy,
-		ModifiedOn,
-		ModifiedBy
-	FROM 
-		#temp_BI_ProductInclusionTables;
-
-	DROP TABLE #temp_BI_ProductInclusionTables;
+	EXEC [dbo].[BI_InsertTestResult] @Table = @temp_BI_ProductInclusionTables;
 
 	SET NOCOUNT OFF;
 END;
