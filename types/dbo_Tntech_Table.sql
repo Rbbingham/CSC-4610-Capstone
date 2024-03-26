@@ -8,6 +8,7 @@ CREATE TYPE [dbo].[TnTech_TableType] AS TABLE (
 	[ActualResult] bigint NOT NULL,
 	[ExpectedResult] bigint NOT NULL,
 	[Deviation] bigint NOT NULL,
+	[RiskScore] int NULL,
 	[CreatedOn] date NOT NULL,
 	[CreatedBy] varchar(256) NOT NULL,
 	[ModifiedOn] date NULL,
