@@ -41,7 +41,7 @@ BEGIN
 		1 AS ExpectedResult,
 		(COUNT(DISTINCT [Month]) - 1) AS Deviation,
 		[dbo].[CalculateRiskScore](COUNT(DISTINCT [Month]), 1) AS RiskScore,
-		CAST(GETDATE() AS DATE) AS CreatedOn,
+		GETDATE() AS CreatedOn,
 		'[CapstoneDB].[dbo].[BI_Health_VincentSLAAAgregate]' AS CreatedBy,
 		NULL AS ModifiedOn,
 		NULL AS ModifiedBy

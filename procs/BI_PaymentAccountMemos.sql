@@ -24,6 +24,7 @@ BEGIN
 	END
 
 	DECLARE @RecordCheckExistance int;
+	DECLARE @InsertsExist int;
 	SET @RecordCheckExistance = (
 		SELECT 
 			COUNT([Id]) AS Records
@@ -31,6 +32,11 @@ BEGIN
 			[BI_Feed].[dbo].[BI_PaymentAccountMemos] with (nolock)
 		WHERE
 			CAST([CreatedOn] AS DATE) >= DATEADD(DAY, @DaysBefore, CAST(GETDATE() AS DATE)));
+	
+	IF @RecordCheckExistance > 0
+		SET @InsertsExist = 0;
+	ELSE
+		SET @InsertsExist = 1;
 
 	-- create temp table
 	DECLARE @temp_BI_PaymentAccountMemos AS [dbo].[TnTech_TableType];
@@ -44,6 +50,7 @@ BEGIN
 			ActualResult,
 			ExpectedResult,
 			Deviation,
+			RiskScore,
 			CreatedOn,
 			CreatedBy,
 			ModifiedOn,
@@ -52,18 +59,11 @@ BEGIN
 		'BI_PaymentAccountMemos' AS TableName,
 		CAST(GETDATE() AS DATE) AS TestRunDate,
 		'Continuous record insertion' AS TestName,
-		CASE
-			WHEN @RecordCheckExistance > 0
-				THEN 0
-				ELSE 1
-		END AS ActualResult,
+		@InsertsExist AS ActualResult,
 		0 AS ExpectedResult,
-		CASE
-			WHEN @RecordCheckExistance > 0
-				THEN 0
-				ELSE 1
-		END AS Deviation,
-		CAST(GETDATE() AS DATE) AS CreatedOn,
+		@InsertsExist AS Deviation,
+		[dbo].[CalculateRiskScore](@InsertsExist, 0),
+		GETDATE() AS CreatedOn,
 		'[CapstoneDB].[dbo].[BI_Health_PaymentAccountMemos]' AS CreatedBy,
 		NULL AS ModifiedOn,
 		NULL AS ModifiedBy;

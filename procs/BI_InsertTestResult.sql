@@ -50,8 +50,7 @@ BEGIN
 				@Table AS T2
 			ON 
 				T1.TableName = T2.TableName AND 
-				T1.TestName = T2.TestName AND 
-				T1.TestRunDate = T2.TestRunDate;
+				T1.TestName = T2.TestName;
 	END
 
 	ELSE
