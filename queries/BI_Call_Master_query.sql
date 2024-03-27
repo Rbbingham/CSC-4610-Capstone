@@ -27,9 +27,10 @@ FROM
 			WHEN DATEPART(WEEKDAY, localCallStartTime) = 1 THEN 'Sun'
 			WHEN DATEPART(WEEKDAY, localCallStartTime) = 2 THEN 'Mon'
 			WHEN DATEPART(WEEKDAY, localCallStartTime) IN (3,4,5) THEN 'Tues-Thur'
-			WHEN DATEPART(WEEKDAY, localCallStartTime) = 6 THEN 'Fri'
+			WHEN DATEPART(WEEKDAY, localCallStartTime) = 6 AND COUNT(callID) < 7000 THEN 'Low-Fri'
+			WHEN DATEPART(WEEKDAY, localCallStartTime) = 6 AND COUNT(callID) >= 7000 THEN 'High-Fri'
 			WHEN DATEPART(WEEKDAY, localCallStartTime) = 7 THEN 'Sat'
-			ELSE 'NULL'
+			ELSE 'Other'
 		END as day_of_week,
 		COUNT(callID) as callIDCount
 	FROM BI_Feed.dbo.BI_Call_Master WITH (nolock)
@@ -55,7 +56,8 @@ SELECT
 		WHEN DATEPART(WEEKDAY, localCallStartTime) = 1 THEN 'Sun'
 		WHEN DATEPART(WEEKDAY, localCallStartTime) = 2 THEN 'Mon'
 		WHEN DATEPART(WEEKDAY, localCallStartTime) IN (3,4,5) THEN 'Tues-Thur'
-		WHEN DATEPART(WEEKDAY, localCallStartTime) = 6 THEN 'Fri'
+		WHEN DATEPART(WEEKDAY, localCallStartTime) = 6 AND COUNT(callID) < 7000 THEN 'Low-Fri'
+		WHEN DATEPART(WEEKDAY, localCallStartTime) = 6 AND COUNT(callID) >= 7000 THEN 'High-Fri'
 		WHEN DATEPART(WEEKDAY, localCallStartTime) = 7 THEN 'Sat'
 		ELSE 'NULL'
 	END as day_of_week,
