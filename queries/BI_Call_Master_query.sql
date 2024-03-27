@@ -80,7 +80,7 @@ SELECT
 	NULL AS ModifiedBy
 FROM #DetailInfo
 FULL OUTER JOIN #WeeklyAverages on #WeeklyAverages.day_of_week = #DetailInfo.day_of_week
-WHERE #DetailInfo.localCallStartTime = DATEADD(day, -2, CAST(GETDATE() as DATE))
+WHERE #DetailInfo.localCallStartTime = DATEADD(day, -1, CAST(GETDATE() as DATE))
 GROUP BY #DetailInfo.localCallStartTime, ExpectedResult, ActualResult
 ORDER BY #DetailInfo.localCallStartTime DESC;
 
