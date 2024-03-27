@@ -1,4 +1,4 @@
-USE CapstoneDB
+USE [CapstoneDB]
 
 SELECT
 	CAST(localCallStartTime as date) as localCallStartTime, 
@@ -7,17 +7,20 @@ FROM BI_Feed.dbo.BI_Call_Master
 GROUP BY CAST(localCallStartTime as date)
 ORDER BY CAST(localCallStartTime as date) DESC;
 ----------------------------------------------------------------
-
+----------------------------------------------------------------
+USE [CapstoneDB]
 -- Create a temporary table for weekly averages
 CREATE TABLE #WeeklyAverages (
 	day_of_week NVARCHAR(20),
 	ExpectedResult INT
 );
 
+-- Query calculates averages of each day (or group of days) of the week
 INSERT INTO #WeeklyAverages
 SELECT day_of_week, AVG(callIDCount) as ExpectedResult
 FROM
 (
+	-- Subquery to calculate call counts by day of week
 	SELECT
 		CAST(localCallStartTime as date) as localCallStartTime,
 		CASE
@@ -35,13 +38,16 @@ FROM
 ) AS subquery
 GROUP BY day_of_week;
 
--- Create a temporary table for detailed information
+-- Create a temporary table for actual result that will be used to connect previous table together
 CREATE TABLE #DetailInfo (
 	localCallStartTime DATE,
 	day_of_week NVARCHAR(20),
 	ActualResult INT
 );
 
+-- Query calculates actual result (count of callID) as it is not accessible from the previous temp table
+-- It also finds the day of week, which is used to join the previous temp table with this one,
+-- allowing access to the previously calculated weekly averages.
 INSERT INTO #DetailInfo
 SELECT
 	CAST(localCallStartTime as date) as localCallStartTime,
@@ -59,7 +65,7 @@ WHERE localCallStartTime >= DATEADD(day, -365, GETDATE())
 GROUP BY CAST(localCallStartTime AS DATE), DATEPART(WEEKDAY, localCallStartTime)
 
 
--- Select query with deviations
+-- Query selects necessary information to be put in table
 SELECT
 	'BI_Call_Master' AS TableName,
 	CAST(GETDATE() AS DATE) AS TestRunDate,
